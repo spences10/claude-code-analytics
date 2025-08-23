@@ -21,6 +21,8 @@ building statusline tools, hooks, and SDK integrations.
 
 ### Implementation Guides
 
+- **[CLI Configuration](cli-configuration.md)** - Interactive setup
+  with @clack/prompts
 - **[Integration Patterns](integration-patterns.md)** - Practical
   examples and use cases
 - **[Examples](examples/)** - Real data samples and working code
@@ -68,12 +70,14 @@ Claude Code Session
 
 ## Getting Started
 
-1. **For Statusline Development**: Start with
+1. **For Interactive Setup**: Run `claude-code-statusline --config` or
+   see [cli-configuration.md](cli-configuration.md)
+2. **For Statusline Development**: Start with
    [statusline-data.md](statusline-data.md)
-2. **For Hook Automation**: Review [hook-system.md](hook-system.md)
-3. **For Analysis Tools**: Check
+3. **For Hook Automation**: Review [hook-system.md](hook-system.md)
+4. **For Analysis Tools**: Check
    [sdk-integration.md](sdk-integration.md)
-4. **For Examples**: Browse [examples/](examples/) directory
+5. **For Examples**: Browse [examples/](examples/) directory
 
 ## Official Documentation Links
 

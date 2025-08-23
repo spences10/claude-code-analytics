@@ -1,4 +1,11 @@
-import { intro, outro, text, confirm, cancel, isCancel } from '@clack/prompts';
+import {
+	cancel,
+	confirm,
+	intro,
+	isCancel,
+	outro,
+	text,
+} from '@clack/prompts';
 
 export async function run_cli() {
 	intro('🌟 Claude Code Statusline Configuration');
@@ -17,7 +24,8 @@ export async function run_cli() {
 			message: 'What would you like to call this configuration?',
 			placeholder: 'My Statusline Config',
 			validate(value) {
-				if (value.length === 0) return `Configuration name is required!`;
+				if (value.length === 0)
+					return `Configuration name is required!`;
 			},
 		});
 
@@ -27,7 +35,9 @@ export async function run_cli() {
 		}
 
 		// For now, just show what we collected
-		outro(`Configuration "${name}" ready! (More options coming soon...)`);
+		outro(
+			`Configuration "${name}" ready! (More options coming soon...)`,
+		);
 	} else {
 		outro('No configuration changes made.');
 	}
