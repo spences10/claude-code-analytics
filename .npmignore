@@ -30,3 +30,6 @@ Thumbs.db
 .claude/
 .prettierrc
 .prettierignore
+
+# docs
+docs/
