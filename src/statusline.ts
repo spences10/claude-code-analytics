@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { run_cli } from './cli/index.js';
 
 interface ClaudeCodeData {
 	session_id?: string;
@@ -25,8 +26,14 @@ interface ClaudeCodeData {
 	[key: string]: any;
 }
 
-function main() {
+async function main() {
 	try {
+		// Check for CLI mode first
+		if (process.argv.includes('--config')) {
+			await run_cli();
+			return;
+		}
+
 		// Read JSON from stdin (Claude Code provides this)
 		let input = '';
 
