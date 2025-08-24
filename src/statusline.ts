@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import Database from 'better-sqlite3';
 import path from 'node:path';
 import { run_cli } from './cli/index.js';
 
@@ -26,7 +26,85 @@ interface ClaudeCodeData {
 	[key: string]: any;
 }
 
+function get_db_path(): string {
+	return path.join(
+		process.env.HOME || '',
+		'.claude',
+		'claude-code-statusline.db',
+	);
+}
+
+function write_to_database(
+	hook_event_type: string,
+	data: ClaudeCodeData,
+	execution_time_ms: number,
+): void {
+	const db = new Database(get_db_path());
+
+	try {
+		// Insert hook event first (no foreign key constraint)
+		if (data.session_id) {
+			const insert_hook = db.prepare(`
+				INSERT INTO hook_events (session_id, event_type, timestamp, execution_time_ms, event_data)
+				VALUES (?, ?, ?, ?, ?)
+			`);
+			insert_hook.run(
+				data.session_id,
+				hook_event_type,
+				new Date().toISOString(),
+				execution_time_ms,
+				JSON.stringify(data),
+			);
+		}
+
+		// Handle session_start specifically
+		if (hook_event_type === 'session_start' && data.session_id) {
+			// Ensure project exists
+			if (data.cwd) {
+				const project_name = path.basename(data.cwd);
+				const insert_project = db.prepare(`
+					INSERT OR IGNORE INTO projects (project_path, project_name)
+					VALUES (?, ?)
+				`);
+				insert_project.run(data.cwd, project_name);
+			}
+
+			// Insert or update session
+			const insert_session = db.prepare(`
+				INSERT OR REPLACE INTO sessions (
+					session_id, project_id, transcript_path, model_id, model_display_name,
+					claude_version, started_at, last_active_at, total_cost_usd,
+					total_api_duration_ms, total_lines_added, total_lines_removed,
+					exceeds_200k_tokens, session_source
+				)
+				SELECT ?, p.project_id, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+				FROM projects p WHERE p.project_path = ?
+			`);
+			insert_session.run(
+				data.session_id,
+				data.transcript_path || '',
+				data.model?.id || '',
+				data.model?.display_name || '',
+				data.claude_version || '',
+				new Date().toISOString(),
+				new Date().toISOString(),
+				data.cost?.total_cost_usd || 0,
+				data.cost?.total_api_duration_ms || 0,
+				data.cost?.total_lines_added || 0,
+				data.cost?.total_lines_removed || 0,
+				data.exceeds_200k_tokens || false,
+				data.sessionSource || '',
+				data.cwd || '',
+			);
+		}
+	} finally {
+		db.close();
+	}
+}
+
 async function main() {
+	const start_time = performance.now();
+
 	try {
 		// Check for CLI mode first
 		if (process.argv.includes('--config')) {
@@ -34,13 +112,16 @@ async function main() {
 			return;
 		}
 
+		// Determine hook event type from command line args
+		const hook_event_type = process.argv[2];
+
 		// Read JSON from stdin (Claude Code provides this)
 		let input = '';
 
 		// Check if there's data available on stdin
 		if (process.stdin.isTTY) {
 			// No stdin data, use command line arg for testing
-			input = process.argv[2] || '{}';
+			input = process.argv[3] || '{}';
 		} else {
 			// Read from stdin synchronously
 			const fs = require('fs');
@@ -48,22 +129,12 @@ async function main() {
 		}
 
 		const data: ClaudeCodeData = JSON.parse(input);
+		const execution_time = performance.now() - start_time;
 
-		// Log raw data to file
-		const log_path = path.join(
-			__dirname,
-			'..',
-			'logs',
-			'claude-code-data.log',
-		);
-
-		// Ensure logs directory exists
-		const logs_dir = path.dirname(log_path);
-		if (!fs.existsSync(logs_dir)) {
-			fs.mkdirSync(logs_dir, { recursive: true });
+		// Write to database
+		if (hook_event_type) {
+			write_to_database(hook_event_type, data, execution_time);
 		}
-
-		fs.appendFileSync(log_path, input + '\n');
 
 		// Simple output for now
 		const parts = [];
@@ -91,23 +162,6 @@ async function main() {
 
 		console.log(parts.join(' | ') || '⚡ Claude Code');
 	} catch (error) {
-		// Log errors
-		try {
-			const logPath = path.join(
-				__dirname,
-				'..',
-				'logs',
-				'claude-code-data.log',
-			);
-			const logsDir = path.dirname(logPath);
-			if (!fs.existsSync(logsDir)) {
-				fs.mkdirSync(logsDir, { recursive: true });
-			}
-			fs.appendFileSync(logPath, `ERROR: ${error}\n`);
-		} catch {
-			// Ignore logging errors
-		}
-
 		console.log('⚡ Claude Code');
 	}
 }

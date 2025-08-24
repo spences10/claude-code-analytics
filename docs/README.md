@@ -25,6 +25,8 @@ building statusline tools, hooks, and SDK integrations.
   with @clack/prompts
 - **[Data Architecture](data-architecture.md)** - Event-driven SQLite
   processing approach
+- **[Database Schema](database-schema.md)** - SQLite schema optimized
+  for hook collection and real-time queries
 - **[Examples](examples/)** - Real data samples and working code
 
 ## Data Flow Overview
@@ -77,11 +79,13 @@ Claude Code Session
 3. **For Hook Automation**: Review [hook-system.md](hook-system.md)
 4. **For Data Architecture**: See
    [data-architecture.md](data-architecture.md)
-5. **For Analysis Tools**: Check
+5. **For Database Schema**: Review
+   [database-schema.md](database-schema.md)
+6. **For Analysis Tools**: Check
    [sdk-integration.md](sdk-integration.md)
-6. **For Project History**: Review
+7. **For Project History**: Review
    [projects-data.md](projects-data.md)
-7. **For Conversation Format**: See
+8. **For Conversation Format**: See
    [conversation-data.md](conversation-data.md)
 
 ## Official Documentation Links
