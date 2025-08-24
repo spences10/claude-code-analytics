@@ -16,15 +16,15 @@ building statusline tools, hooks, and SDK integrations.
   monitoring
 - **[SDK Integration](sdk-integration.md)** - Programmatic Claude API
   access
-- **[Filesystem Access](filesystem-access.md)** - .claude directory,
-  environment, and project data
+- **[Projects Data](projects-data.md)** - Historical conversation data
+  per project
 
 ### Implementation Guides
 
 - **[CLI Configuration](cli-configuration.md)** - Interactive setup
   with @clack/prompts
-- **[Integration Patterns](integration-patterns.md)** - Practical
-  examples and use cases
+- **[Data Architecture](data-architecture.md)** - Event-driven SQLite
+  processing approach
 - **[Examples](examples/)** - Real data samples and working code
 
 ## Data Flow Overview
@@ -75,9 +75,14 @@ Claude Code Session
 2. **For Statusline Development**: Start with
    [statusline-data.md](statusline-data.md)
 3. **For Hook Automation**: Review [hook-system.md](hook-system.md)
-4. **For Analysis Tools**: Check
+4. **For Data Architecture**: See
+   [data-architecture.md](data-architecture.md)
+5. **For Analysis Tools**: Check
    [sdk-integration.md](sdk-integration.md)
-5. **For Examples**: Browse [examples/](examples/) directory
+6. **For Project History**: Review
+   [projects-data.md](projects-data.md)
+7. **For Conversation Format**: See
+   [conversation-data.md](conversation-data.md)
 
 ## Official Documentation Links
 
