@@ -14,6 +14,10 @@ import {
 	update_session_metrics,
 	type ClaudeCodeData,
 } from './database';
+import {
+	process_all_pending_transcripts,
+	process_jsonl_transcript,
+} from './parsers/jsonl-parser';
 
 // Global map to track active tool calls
 const active_tool_calls = new Map<string, number>();
@@ -28,6 +32,43 @@ async function main() {
 		// Check for CLI mode first
 		if (process.argv.includes('--config')) {
 			await run_cli();
+			return;
+		}
+
+		// Check for JSONL processing commands
+		if (process.argv.includes('--process-transcripts')) {
+			console.log('Processing all pending JSONL transcripts...');
+			await process_all_pending_transcripts();
+			console.log('Transcript processing completed.');
+			return;
+		}
+
+		if (process.argv.includes('--process-transcript')) {
+			const transcript_path =
+				process.argv[
+					process.argv.indexOf('--process-transcript') + 1
+				];
+			const session_id =
+				process.argv[
+					process.argv.indexOf('--process-transcript') + 2
+				];
+
+			if (!transcript_path || !session_id) {
+				console.error(
+					'Usage: --process-transcript <transcript_path> <session_id>',
+				);
+				return;
+			}
+
+			console.log(
+				`Processing JSONL transcript: ${transcript_path} for session ${session_id}`,
+			);
+			await process_jsonl_transcript(
+				transcript_path,
+				session_id,
+				true,
+			); // force reprocess
+			console.log('Transcript processing completed.');
 			return;
 		}
 
@@ -67,10 +108,41 @@ async function main() {
 				case 'session_start':
 					// Just create basic session record, rich data comes from statusline
 					insert_or_update_session(data);
+
+					// Trigger JSONL processing for this session's transcript
+					if (
+						data.transcript_path &&
+						fs.existsSync(data.transcript_path)
+					) {
+						// Process in background to avoid blocking the hook
+						process_jsonl_transcript(
+							data.transcript_path,
+							data.session_id,
+						).catch((error) => {
+							console.error(
+								'Background JSONL processing failed:',
+								error,
+							);
+						});
+					}
 					break;
 
 				case 'session_end':
 					end_session(data.session_id, data.end_reason);
+
+					// Final JSONL processing to ensure all messages are captured
+					if (
+						data.transcript_path &&
+						fs.existsSync(data.transcript_path)
+					) {
+						// Process synchronously on session end to ensure completion
+						await process_jsonl_transcript(
+							data.transcript_path,
+							data.session_id,
+						).catch((error) => {
+							console.error('Final JSONL processing failed:', error);
+						});
+					}
 					break;
 
 				case 'user_prompt_submit':
@@ -142,6 +214,23 @@ async function main() {
 						}
 					}
 					update_session_metrics(data);
+
+					// Incremental JSONL processing after tool use
+					if (
+						data.transcript_path &&
+						fs.existsSync(data.transcript_path)
+					) {
+						// Process in background to avoid blocking the hook
+						process_jsonl_transcript(
+							data.transcript_path,
+							data.session_id,
+						).catch((error) => {
+							console.error(
+								'Incremental JSONL processing failed:',
+								error,
+							);
+						});
+					}
 					break;
 
 				default:

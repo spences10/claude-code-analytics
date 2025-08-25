@@ -31,7 +31,7 @@ export function record_message(
 			token_count_input || null,
 			token_count_output || null,
 			cost_usd || null,
-			has_tool_calls,
+			has_tool_calls ? 1 : 0,
 		);
 
 		db.close();
