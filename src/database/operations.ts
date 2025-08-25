@@ -9,9 +9,9 @@ export function insert_hook_event(
 	event_data: ClaudeCodeData,
 	tool_name?: string,
 ): void {
-	const db = get_database();
-
 	try {
+		const db = get_database();
+
 		const stmt = db.prepare(`
 			INSERT INTO hook_events (session_id, event_type, timestamp, execution_time_ms, tool_name, event_data)
 			VALUES (?, ?, ?, ?, ?, ?)
@@ -25,8 +25,11 @@ export function insert_hook_event(
 			tool_name || null,
 			JSON.stringify(event_data),
 		);
-	} finally {
+
 		db.close();
+	} catch (error) {
+		// Graceful fallback - log error but don't crash
+		console.error('Failed to insert hook event:', error);
 	}
 }
 
@@ -34,26 +37,27 @@ export function insert_or_update_project(
 	project_path: string,
 	project_name: string,
 ): void {
-	const db = get_database();
-
 	try {
+		const db = get_database();
+
 		const stmt = db.prepare(`
 			INSERT OR IGNORE INTO projects (project_path, project_name)
 			VALUES (?, ?)
 		`);
 
 		stmt.run(project_path, project_name);
-	} finally {
 		db.close();
+	} catch (error) {
+		console.error('Failed to insert/update project:', error);
 	}
 }
 
 export function insert_or_update_session(data: ClaudeCodeData): void {
 	if (!data.session_id || !data.cwd) return;
 
-	const db = get_database();
-
 	try {
+		const db = get_database();
+
 		// Ensure project exists first
 		const project_name = path.basename(data.cwd);
 		insert_or_update_project(data.cwd, project_name);
@@ -86,7 +90,9 @@ export function insert_or_update_session(data: ClaudeCodeData): void {
 			data.sessionSource || '',
 			data.cwd,
 		);
-	} finally {
+
 		db.close();
+	} catch (error) {
+		console.error('Failed to insert/update session:', error);
 	}
 }

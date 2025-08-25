@@ -38,9 +38,11 @@ Launches interactive prompts for configuration management.
 
 ## Current Configuration Options
 
-**Basic Setup** (more options coming as project develops):
+**Basic Setup**:
 
 - Configuration naming
+- Core data collection toggle
+- Performance logging toggle
 - Setup confirmation
 
 ## Future Configuration Areas
@@ -53,14 +55,43 @@ _These will be added as the project develops:_
 - Output format preferences
 - Multiple configuration presets
 
+## Configuration Options Details
+
+### Core Data Collection
+
+**Purpose**: Control whether the package collects session and project
+data for statusline display and analytics
+
+**Options**:
+
+- **Enabled** (default): Collect sessions, projects, and analytics
+  data
+- **Disabled**: Package is completely disabled
+
+**Use Case**: This is the main feature toggle - disabling it turns off
+the entire package functionality
+
+### Performance Logging
+
+**Purpose**: Control whether hook execution times are logged for
+debugging and optimization
+
+**Options**:
+
+- **Disabled** (default): No performance logging
+- **Enabled**: Log hook execution times to `hook_events` table
+
+**Use Case**: Enable only when debugging performance issues or
+optimizing hook execution
+
 ## Technical Details
 
 - **Library**: @clack/prompts for interactive CLI
 - **Entry Point Detection**: `--config` flag routes to CLI mode
 - **Performance**: Fast statusline path remains separate for 300ms
   updates
-- **Configuration Storage**: Planned for `~/.claude/` and `./.claude/`
-  hierarchy
+- **Configuration Storage**: `~/.claude/statusline-config.json`
+  (global) or `.claude/statusline-config.json` (project)
 
 ## See Also
 

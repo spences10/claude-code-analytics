@@ -1,6 +1,10 @@
 import fs from 'node:fs';
 import { run_cli } from './cli/index';
 import {
+	is_data_collection_enabled,
+	is_performance_logging_enabled,
+} from './config/index';
+import {
 	insert_hook_event,
 	insert_or_update_session,
 	type ClaudeCodeData,
@@ -9,15 +13,15 @@ import {
 async function main() {
 	const start_time = performance.now();
 
+	// Determine hook event type from command line args
+	const hook_event_type = process.argv[2];
+
 	try {
 		// Check for CLI mode first
 		if (process.argv.includes('--config')) {
 			await run_cli();
 			return;
 		}
-
-		// Determine hook event type from command line args
-		const hook_event_type = process.argv[2];
 
 		// Read JSON from stdin (Claude Code provides this)
 		let input = '';
@@ -34,18 +38,25 @@ async function main() {
 		const data: ClaudeCodeData = JSON.parse(input);
 		const execution_time = performance.now() - start_time;
 
-		// Write to database
-		if (hook_event_type && data.session_id) {
-			insert_hook_event(
-				data.session_id,
-				hook_event_type,
-				execution_time,
-				data,
-			);
-
+		// Core data collection (if enabled)
+		if (
+			hook_event_type &&
+			data.session_id &&
+			is_data_collection_enabled()
+		) {
 			// Handle session_start specifically
 			if (hook_event_type === 'session_start') {
 				insert_or_update_session(data);
+			}
+
+			// Performance logging (if enabled separately)
+			if (is_performance_logging_enabled()) {
+				insert_hook_event(
+					data.session_id,
+					hook_event_type,
+					execution_time,
+					data,
+				);
 			}
 		}
 
@@ -73,9 +84,15 @@ async function main() {
 			parts.push(`📊 +${added}/-${removed}`);
 		}
 
-		console.log(parts.join(' | ') || '⚡ Claude Code');
+		// Only output statusline when not running as a hook
+		if (!hook_event_type) {
+			console.log(parts.join(' | ') || '⚡ Claude Code');
+		}
 	} catch (error) {
-		console.log('⚡ Claude Code');
+		// Only output error fallback when not running as a hook
+		if (!hook_event_type) {
+			console.log('⚡ Claude Code');
+		}
 	}
 }
 
