@@ -19,6 +19,18 @@ export interface ClaudeCodeData {
 		total_lines_removed: number;
 	};
 	exceeds_200k_tokens?: boolean;
+
+	// Hook-specific fields
+	tool_name?: string;
+	toolUseID?: string;
+	file_path?: string;
+	lines_changed?: number;
+	error_message?: string;
+	end_reason?: string;
+	gitBranch?: string;
+	sessionSource?: string;
+	session_source?: string;
+
 	[key: string]: any;
 }
 

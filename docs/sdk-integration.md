@@ -104,6 +104,18 @@ echo "Summary: $SUMMARY" >> reports.log
 - **Batch requests** - Process multiple items together
 - **Choose appropriate models** - Balance speed vs quality
 
+## Official Documentation
+
+For the most up-to-date information, fetch the official Claude Code
+SDK documentation:
+
+```bash
+# Fetch latest SDK documentation
+curl -s https://docs.anthropic.com/en/docs/claude-code/sdk
+```
+
+**Official Link:** https://docs.anthropic.com/en/docs/claude-code/sdk
+
 ## See Also
 
 - [SDK Examples](examples/sdk-usage.js) - Code samples

@@ -21,21 +21,23 @@ a solid, modular data processing foundation.
         context)
   - [x] Command configuration in .claude/settings.json
 
-### Phase 1b: SQLite Data Architecture
+### Phase 1b: SQLite Data Architecture ✓
 
-- [ ] **Database Schema Design** - Efficient storage for large
-      datasets
-  - [ ] Sessions table (statusline data aggregation)
-  - [ ] Messages table (JSONL conversation data)
-  - [ ] Tools table (tool usage analytics)
-  - [ ] File positions table (incremental processing tracking)
+- [x] **Database Schema Design** - Efficient storage for large
+      datasets ✓
+  - [x] Sessions table (statusline data aggregation) ✓
+  - [x] Messages table (JSONL conversation data) ✓
+  - [x] Tools table (tool usage analytics) ✓
+  - [x] File positions table (incremental processing tracking) ✓
 
-- [ ] **Hook-Driven Data Collection**
-  - [ ] CLI flags for different hook operations (--session-start,
-        --tool-use, etc.)
-  - [ ] Hook configuration templates for .claude/settings.json
-  - [ ] Data collection workflows per hook type
-  - [ ] SQLite database initialization and updates
+- [x] **Hook-Driven Data Collection** ✓
+  - [x] CLI flags for different hook operations (--session-start,
+        --tool-use, etc.) ✓
+  - [x] Hook configuration templates for .claude/settings.json ✓
+  - [x] Data collection workflows per hook type ✓
+  - [x] SQLite database initialization and updates ✓
+
+**STATUS UPDATE**: Database schema is complete and hook events are being collected (94 events recorded). However, JSONL transcript parsing is not yet implemented - this is the critical missing piece.
 
 ### Core Data Infrastructure
 
@@ -45,17 +47,17 @@ a solid, modular data processing foundation.
   - [ ] SessionMetrics and Cost tracking types
   - [ ] HookContext and event-specific data types
 
-- [ ] **Data Parsers** - Reliable, tested parsing modules
-  - [ ] JSONL parser for conversation transcripts
-  - [ ] Hook stdin data parser (JSON context from Claude Code)
-  - [ ] Projects directory scanner and parser
+- [ ] **Data Parsers** - Reliable, tested parsing modules **← NEXT PRIORITY**
+  - [ ] **JSONL parser for conversation transcripts** ⚠️ CRITICAL - 0 messages in DB
+  - [x] Hook stdin data parser (JSON context from Claude Code) ✓
+  - [x] Projects directory scanner and parser ✓
   - [ ] Error handling for malformed/incomplete data
 
-- [ ] **Data Access Layer** - SQLite-based with hook integration
-  - [ ] Database connection and migration management
-  - [ ] Incremental JSONL file processing (position tracking)
-  - [ ] Hook-triggered data updates
-  - [ ] Query interfaces for analytics and statusline
+- [x] **Data Access Layer** - SQLite-based with hook integration ✓
+  - [x] Database connection and migration management ✓
+  - [ ] **Incremental JSONL file processing (position tracking)** ⚠️ CRITICAL - 0 processing_state records
+  - [x] Hook-triggered data updates ✓
+  - [x] Query interfaces for analytics and statusline ✓
 
 ### Configuration & Setup
 
@@ -168,5 +170,6 @@ Project History
 
 ---
 
-**Next Steps**: Focus entirely on Phase 1 foundation work. No features
-until data infrastructure is solid, tested, and documented.
+**CURRENT STATUS**: Phase 1b SQLite architecture is 80% complete. Hook system is working (94 events collected), but JSONL transcript parsing is missing - this prevents messages, tool_calls, files, and file_operations tables from being populated.
+
+**IMMEDIATE NEXT STEP**: Implement JSONL parser to populate missing database tables with conversation data.

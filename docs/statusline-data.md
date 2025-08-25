@@ -53,6 +53,19 @@ interface ClaudeCodeData {
 - **300ms intervals** while Claude Code is active
 - Real-time cost and line change updates
 
+## Official Documentation
+
+For the most up-to-date information, fetch the official Claude Code
+statusline documentation:
+
+```bash
+# Fetch latest statusline documentation
+curl -s https://docs.anthropic.com/en/docs/claude-code/statusline
+```
+
+**Official Link:**
+https://docs.anthropic.com/en/docs/claude-code/statusline
+
 ## See Also
 
 - [Examples](examples/statusline-examples.json) - More data samples

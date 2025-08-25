@@ -1,50 +1,61 @@
 # Data Architecture Reference
 
-Event-driven data collection using Claude Code hooks with SQLite
-storage for efficient analytics and real-time statusline updates.
+**Hybrid statusline + hooks architecture** for comprehensive data
+collection with zero performance impact on Claude Code operations.
 
-## Architecture Overview
+## Hybrid Architecture Overview
 
 ```mermaid
 flowchart TD
-    subgraph "System Components"
-        A[Claude Code Events] --> B[Hooks System]
-        B --> C[Our CLI Binary]
-        C --> D[SQLite Database]
-        D --> E[Analytics & Statusline]
+    subgraph "Claude Code"
+        A[Statusline Updates] --> B[Rich JSON Data]
+        C[Hook Events] --> D[Lifecycle Events]
     end
 
-    subgraph "Data Flow & Processing"
-        A1[Session/Tool Events] --> B1[JSON via stdin]
-        B1 --> C1[Parse Context]
-        C1 --> D1[Store Data]
-        D1 --> E1[Query Data]
-        E1 --> F1[Display/Reports]
+    subgraph "Our Binary"
+        B --> E[Cache Rich Data]
+        D --> F[Update Activity]
+        E --> G[SQLite Database]
+        F --> G
     end
 
-    A -.->|maps to| A1
-    B -.->|provides| B1
-    C -.->|performs| C1
-    D -.->|enables| D1
-    E -.->|outputs| E1
+    subgraph "Result"
+        G --> H[Complete Session Records]
+        H --> I[Analytics & Reports]
+    end
 ```
 
-## Hook Integration Strategy
+**Key Innovation**: Statusline caches rich data, hooks provide precise
+timing.
 
-### Hook Types We'll Use
+## Hybrid Data Collection Strategy
 
-- **SessionStart/End** - Session lifecycle tracking
-- **PreToolUse/PostToolUse** - Tool usage and cost tracking
-- **UserPromptSubmit** - Activity and engagement metrics
+### Statusline Mode (Rich Data Source)
 
-### Available Hook Context
+**Triggered**: Every 300ms by Claude Code **Data**: Complete session
+metrics, cost tracking, model info **Purpose**: Cache comprehensive
+session data to database
 
-Hooks receive JSON via stdin with:
+```json
+{
+	"session_id": "929efe36-d188-4175-86cc-8f162405f6a2",
+	"model_id": "claude-sonnet-4-20250514",
+	"model_display_name": "Sonnet 4",
+	"total_cost_usd": 1.2686553,
+	"total_lines_added": 43,
+	"total_lines_removed": 8
+}
+```
 
-- `session_id`, `transcript_path`, `cwd`
-- `tool_name`, `tool_input` (for tool events)
-- `prompt` (for user prompt events)
-- Environment: `CLAUDE_PROJECT_DIR`
+### Hook Mode (Event-Driven Updates)
+
+**Triggered**: By actual Claude Code lifecycle events **Data**: Basic
+context (session_id, cwd, tool info) **Purpose**: Precise timing and
+activity tracking
+
+- **SessionStart/End** - Session lifecycle management
+- **PreToolUse/PostToolUse** - Tool usage events and performance
+- **UserPromptSubmit** - User interaction tracking
 
 ### CLI Integration
 
@@ -136,18 +147,28 @@ CREATE TABLE file_positions (
 
 ## Performance Benefits
 
-### vs. 300ms Polling
+### Hybrid Approach Advantages
 
-- **99.9% less resource usage** - only runs on actual events
-- **No memory accumulation** - triggered processing, not continuous
-- **Battery efficient** - no constant background polling
+- **Rich Data**: Full cost, model, and metrics from statusline
+- **Zero Performance Impact**: Event-driven updates with no blocking
+- **Precise Timing**: Hooks provide exact session lifecycle events
+- **Battery Efficient**: No constant polling, only triggered updates
+- **Complete Records**: Combines comprehensive data with accurate
+  timing
 
-### vs. Full File Parsing
+### vs. Pure Statusline Polling
 
-- **Incremental processing** - only new data parsed
-- **Position tracking** - resume from interruptions
-- **SQLite indexing** - instant aggregation queries
-- **Cross-project analytics** - unified data model
+- **No constant database writes** - only updates on actual events
+- **Lifecycle precision** - exact session start/end timestamps
+- **Activity tracking** - hooks show real user interaction patterns
+
+### vs. Hook-Only Approach
+
+- **Rich session data** - model info, costs, metrics unavailable in
+  hooks
+- **Real-time metrics** - statusline provides live cost and line
+  tracking
+- **Visual consistency** - same data source for display and storage
 
 ## Statusline Integration
 

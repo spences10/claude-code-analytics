@@ -1,6 +1,6 @@
 import path from 'node:path';
-import { get_database } from './connection';
-import type { ClaudeCodeData } from './types';
+import { get_database } from '../connection';
+import type { ClaudeCodeData } from '../types';
 
 export function insert_hook_event(
 	session_id: string,
@@ -74,7 +74,7 @@ export function insert_or_update_session(data: ClaudeCodeData): void {
 			FROM projects p WHERE p.project_path = ?
 		`);
 
-		stmt.run(
+		const params = [
 			data.session_id,
 			data.transcript_path || '',
 			data.model?.id || '',
@@ -82,17 +82,79 @@ export function insert_or_update_session(data: ClaudeCodeData): void {
 			data.version || '',
 			new Date().toISOString(),
 			new Date().toISOString(),
-			data.cost?.total_cost_usd || 0,
-			data.cost?.total_api_duration_ms || 0,
-			data.cost?.total_lines_added || 0,
-			data.cost?.total_lines_removed || 0,
-			data.exceeds_200k_tokens || false,
-			data.sessionSource || '',
+			Number(data.cost?.total_cost_usd || 0),
+			Number(data.cost?.total_api_duration_ms || 0),
+			Number(data.cost?.total_lines_added || 0),
+			Number(data.cost?.total_lines_removed || 0),
+			data.exceeds_200k_tokens ? 1 : 0,
+			String(data.sessionSource || data.session_source || ''),
 			data.cwd,
-		);
+		];
+
+		stmt.run(...params);
 
 		db.close();
 	} catch (error) {
 		console.error('Failed to insert/update session:', error);
+	}
+}
+
+export function update_session_metrics(data: ClaudeCodeData): void {
+	if (!data.session_id) return;
+
+	try {
+		const db = get_database();
+
+		const stmt = db.prepare(`
+			UPDATE sessions 
+			SET last_active_at = ?, 
+				total_cost_usd = COALESCE(?, total_cost_usd),
+				total_api_duration_ms = COALESCE(?, total_api_duration_ms),
+				total_lines_added = COALESCE(?, total_lines_added),
+				total_lines_removed = COALESCE(?, total_lines_removed),
+				exceeds_200k_tokens = COALESCE(?, exceeds_200k_tokens)
+			WHERE session_id = ?
+		`);
+
+		stmt.run(
+			new Date().toISOString(),
+			data.cost?.total_cost_usd,
+			data.cost?.total_api_duration_ms,
+			data.cost?.total_lines_added,
+			data.cost?.total_lines_removed,
+			data.exceeds_200k_tokens,
+			data.session_id,
+		);
+
+		db.close();
+	} catch (error) {
+		console.error('Failed to update session metrics:', error);
+	}
+}
+
+export function end_session(
+	session_id: string,
+	end_reason?: string,
+): void {
+	if (!session_id) return;
+
+	try {
+		const db = get_database();
+
+		// Calculate final duration based on started_at and current time
+		const stmt = db.prepare(`
+			UPDATE sessions 
+			SET ended_at = ?,
+				end_reason = ?,
+				duration_ms = CAST((julianday(?) - julianday(started_at)) * 24 * 60 * 60 * 1000 AS INTEGER)
+			WHERE session_id = ? AND ended_at IS NULL
+		`);
+
+		const now = new Date().toISOString();
+		stmt.run(now, end_reason || 'normal', now, session_id);
+
+		db.close();
+	} catch (error) {
+		console.error('Failed to end session:', error);
 	}
 }

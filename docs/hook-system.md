@@ -101,6 +101,19 @@ Configure in `.claude/settings.json`:
 - Set timeouts
 - Test in safe environments
 
+## Official Documentation
+
+For the most up-to-date information, fetch the official Claude Code
+hooks documentation:
+
+```bash
+# Fetch latest hooks documentation
+curl -s https://docs.anthropic.com/en/docs/claude-code/hooks
+```
+
+**Official Link:**
+https://docs.anthropic.com/en/docs/claude-code/hooks
+
 ## See Also
 
 - [Hook Examples](examples/hook-configs.json) - More configurations
