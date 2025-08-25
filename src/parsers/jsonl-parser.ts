@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import readline from 'node:readline';
+import { record_file_operation } from '../database/operations/files';
 import { record_message } from '../database/operations/messages';
 import {
 	get_pending_transcripts,
@@ -7,7 +8,10 @@ import {
 	update_processing_position,
 	update_processing_status,
 } from '../database/operations/processing-state';
-import { start_tool_call } from '../database/operations/tool-calls';
+import {
+	end_tool_call_by_use_id,
+	start_tool_call,
+} from '../database/operations/tool-calls';
 
 interface ConversationMessage {
 	type: 'user' | 'assistant' | 'system';
@@ -19,10 +23,13 @@ interface ConversationMessage {
 					type: string;
 					text?: string;
 					name?: string;
+					id?: string;
+					tool_use_id?: string;
 					input?: any;
+					content?: any;
 			  }>;
 	};
-	content?: string; // For system messages
+	content?: string;
 	uuid: string;
 	timestamp?: string;
 }
@@ -56,6 +63,7 @@ export async function process_jsonl_transcript(
 		let current_position = start_position;
 		let processed_count = 0;
 		let message_index = 0;
+		let conversation_message_index = 0;
 
 		const file_stream = fs.createReadStream(transcript_path, {
 			start: start_position,
@@ -75,11 +83,20 @@ export async function process_jsonl_transcript(
 				}
 
 				const message: ConversationMessage = JSON.parse(line);
-				await process_single_message(
-					session_id,
-					message,
-					message_index++,
-				);
+
+				// Only increment conversation_message_index for non-system messages
+				const should_record =
+					message.type !== 'system' ||
+					(message.content && message.content.trim());
+				if (should_record) {
+					await process_single_message(
+						session_id,
+						message,
+						conversation_message_index++,
+					);
+				}
+
+				message_index++; // Always increment for position tracking
 
 				current_position += line.length + 1;
 				processed_count++;
@@ -121,6 +138,7 @@ async function process_single_message(
 ): Promise<void> {
 	let content_preview = '';
 	let has_tool_calls = false;
+	let tool_call_ids: number[] = [];
 
 	// Extract content based on message structure
 	if (message.message?.content) {
@@ -130,13 +148,45 @@ async function process_single_message(
 			for (const content_item of message.message.content) {
 				if (content_item.type === 'text' && content_item.text) {
 					content_preview += content_item.text.substring(0, 500);
-					break;
 				} else if (
 					content_item.type === 'tool_use' &&
 					content_item.name
 				) {
 					has_tool_calls = true;
-					start_tool_call(session_id, content_item.name);
+					const tool_call_id = start_tool_call(
+						session_id,
+						content_item.name,
+						content_item.id, // Pass the tool_use_id
+					);
+					if (tool_call_id) {
+						tool_call_ids.push(tool_call_id);
+					}
+
+					// Track file operations based on tool name
+					if (content_item.input?.file_path) {
+						const operation_type = get_operation_type(
+							content_item.name,
+						);
+						if (operation_type) {
+							record_file_operation(
+								session_id,
+								content_item.input.file_path,
+								operation_type,
+								0, // We don't know lines changed yet
+								tool_call_id || undefined,
+							);
+						}
+					}
+				} else if (
+					content_item.type === 'tool_result' &&
+					content_item.tool_use_id
+				) {
+					// End the tool call
+					end_tool_call_by_use_id(
+						session_id,
+						content_item.tool_use_id,
+						!content_item.content?.includes('error'), // Simple error detection
+					);
 				}
 			}
 		}
@@ -144,7 +194,7 @@ async function process_single_message(
 		content_preview = message.content.substring(0, 500);
 	}
 
-	if (!content_preview.trim()) {
+	if (!content_preview.trim() && !has_tool_calls) {
 		return;
 	}
 
@@ -160,6 +210,18 @@ async function process_single_message(
 		undefined,
 		has_tool_calls,
 	);
+}
+
+// Helper function to determine operation type from tool name
+function get_operation_type(
+	tool_name: string,
+): 'read' | 'write' | 'edit' | null {
+	const tool_lower = tool_name.toLowerCase();
+	if (tool_lower === 'read') return 'read';
+	if (tool_lower === 'write') return 'write';
+	if (tool_lower === 'edit' || tool_lower === 'multiedit')
+		return 'edit';
+	return null;
 }
 
 export async function process_all_pending_transcripts(): Promise<void> {

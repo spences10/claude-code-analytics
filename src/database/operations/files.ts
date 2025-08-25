@@ -58,8 +58,10 @@ export function record_file_operation(
 			new Date().toISOString(),
 		);
 
-		// Update file statistics
-		const update_field = `total_${operation_type}_operations`;
+		// Update file statistics - map 'edit' to 'write' for database column
+		const db_operation_type =
+			operation_type === 'edit' ? 'write' : operation_type;
+		const update_field = `total_${db_operation_type}_operations`;
 		db.prepare(
 			`
 			UPDATE files 

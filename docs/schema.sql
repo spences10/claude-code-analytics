@@ -57,6 +57,7 @@ CREATE TABLE tool_calls (
     session_id TEXT NOT NULL,
     message_id INTEGER,
     tool_name TEXT NOT NULL,
+    tool_use_id TEXT,
     started_at TIMESTAMP,
     completed_at TIMESTAMP,
     execution_time_ms INTEGER,
