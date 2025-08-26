@@ -121,86 +121,27 @@ working**
   - [ ] Simple productivity metrics
   - [ ] Export capabilities (JSON, CSV)
 
-## Phase 3: Enhanced Features (Future)
+## Phase 3: Advanced SQL Analytics (Future)
 
-### SDK Analysis Infrastructure
+### Cross-Project Intelligence
 
-- [ ] **Data Collation Layer** - Modular, configuration-ready analysis
-  - [ ] conversation-formatter.js - Query messages, format for AI
-  - [ ] session-context-builder.js - Pull session metrics and tool
-        usage
-  - [ ] rules-extractor.js - Parse CLAUDE.md conventions
-  - [ ] Factory pattern: `create_analyzer(config)` for future
-        configuration
+- [ ] **Cost trend analysis** - Spending patterns across projects over time
+- [ ] **Project comparison metrics** - Relative productivity and efficiency 
+- [ ] **Session pattern analysis** - Peak usage times and frequency trends
 
-- [ ] **Prompt Template System** - DRY prompt management
-  - [ ] Template files with {variable} substitution
-  - [ ] Prompt library (topic-summary, quality-check,
-        convention-check)
-  - [ ] Variable formatting utilities
-  - [ ] Model selection strategy (haiku for speed, sonnet for depth)
+### Productivity Analytics
 
-- [ ] **Analysis Caching Layer** - Performance optimization
-  - [ ] Result caching to prevent duplicate API calls
-  - [ ] Background processing (don't block 300ms statusline updates)
-  - [ ] Rate limiting and cost management
-  - [ ] Cache invalidation on conversation changes
+- [ ] **Efficiency scoring** - Lines changed per minute/session/dollar
+- [ ] **Tool performance metrics** - Success rates and execution time analysis
+- [ ] **File change velocity** - Code modification patterns and hotspots
+- [ ] **Session optimization insights** - Identify unproductive patterns
 
-- [ ] **Database Schema Extensions** - Analysis result storage
-  - [ ] analysis table (session_id, analysis_type, result, timestamp)
-  - [ ] session analysis fields (current_topic, quality_score,
-        success_probability)
-  - [ ] Incremental analysis tracking
-  - [ ] Query interfaces for statusline consumption
+### Historical Data Mining  
 
-- [ ] **Hook Integration Points** - Real-time analysis triggers
-  - [ ] user_prompt_submit - Analyze conversation trajectory
-  - [ ] post_tool_use - Check convention compliance
-  - [ ] session_end - Generate success metrics
-  - [ ] Background JSONL processing integration
-
-### Smart Statusline Enhancements
-
-- [ ] **Session Quality Indicators** - Real-time AI analysis
-  - [ ] 🟢 On-track vs 🟡 Wandering vs 🔴 Off-rails detection
-  - [ ] Success probability scoring (⚡ 85%)
-  - [ ] Convention compliance warnings (⚠️ Ignoring CLAUDE.md)
-  - [ ] Cost trajectory prediction
-
-- [ ] **AI-Generated Context** - Dynamic statusline content
-  - [ ] Topic summaries (2-3 words via haiku model)
-  - [ ] Session objective tracking (🎯 3/5 objectives)
-  - [ ] Progress likelihood indicators
-  - [ ] Early warning system for unproductive sessions
-
-- [ ] **Project context awareness** - Historical analysis
-- [ ] **Git integration indicators** - Repository state awareness
-- [ ] **Build/test status integration** - Development workflow context
-
-### Advanced CLI Features
-
-- [ ] Cross-project analytics and trends
-- [ ] Conversation search and mining
-- [ ] Productivity scoring and insights
-- [ ] Historical project evolution analysis
-
-### Automation & Intelligence
-
-- [ ] **Smart Hook Integrations** - Context-aware automation
-  - [ ] Pattern recognition for session quality
-  - [ ] Proactive workflow suggestions
-  - [ ] Automated session summaries
-  - [ ] Convention violation alerts
-
-- [ ] **AI-Powered Insights via SDK** - Advanced analysis
-  - [ ] Conversation flow analysis
-  - [ ] Learning pattern detection
-  - [ ] Productivity optimization recommendations
-  - [ ] Historical context integration
-
-- [ ] **Predictive Analytics** - Future session optimization
-- [ ] **Workflow Optimization Suggestions** - Intelligent
-      recommendations
+- [ ] **Activity heatmaps** - When and where development happens most
+- [ ] **Evolution tracking** - How projects change over time
+- [ ] **Cost forecasting** - Predict future spending based on usage patterns
+- [ ] **Content search** - Search conversation previews and metadata
 
 ## Architecture Principles
 

@@ -2,7 +2,7 @@
 
 This documentation maps all available data sources and integration
 points within Claude Code, providing comprehensive reference for
-building statusline tools, hooks, and SDK integrations.
+building statusline tools and hook-driven analytics.
 
 ## Quick Reference
 
@@ -14,8 +14,6 @@ building statusline tools, hooks, and SDK integrations.
   format with full message history
 - **[Hook System](hook-system.md)** - Event-driven automation and
   monitoring
-- **[SDK Integration](sdk-integration.md)** - Programmatic Claude API
-  access
 - **[Projects Data](projects-data.md)** - Historical conversation data
   per project
 
@@ -36,7 +34,6 @@ Claude Code Session
 ├── Real-time Status (300ms) → Statusline Scripts
 ├── Conversation Events → Hook System
 ├── Full Transcript → JSONL File
-├── SDK Access → Programmatic Analysis
 └── File System → Project Context
 ```
 
@@ -67,12 +64,12 @@ Claude Code Session
 - Custom notification triggers
 - **Background JSONL processing** doesn't block operations
 
-### Rich Analysis Potential
+### Data Analysis Capabilities
 
-- Conversation summarization via SDK
-- Activity pattern analysis
+- Activity pattern analysis from database
 - Productivity metrics and trends
 - Context-aware project insights
+- Session and tool usage analytics
 
 ## Getting Started
 
@@ -94,15 +91,12 @@ Claude Code Session
    [data-architecture.md](data-architecture.md)
 4. **For Database Schema**: Review
    [database-schema.md](database-schema.md)
-5. **For Analysis Tools**: Check
-   [sdk-integration.md](sdk-integration.md)
-6. **For Project History**: Review
+5. **For Project History**: Review
    [projects-data.md](projects-data.md)
-7. **For Conversation Format**: See
+6. **For Conversation Format**: See
    [conversation-data.md](conversation-data.md)
 
 ## Official Documentation Links
 
 - [Claude Code Statusline](https://docs.anthropic.com/en/docs/claude-code/statusline)
 - [Claude Code Hooks](https://docs.anthropic.com/en/docs/claude-code/hooks)
-- [Claude Code SDK](https://docs.anthropic.com/en/docs/claude-code/sdk)
