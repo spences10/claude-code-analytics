@@ -6,6 +6,7 @@ interface StatuslineConfig {
 	name?: string;
 	data_collection?: boolean;
 	performance_logging?: boolean;
+	hook_logging?: boolean;
 	display?: {
 		show_cost?: boolean;
 		show_duration?: boolean;
@@ -104,6 +105,7 @@ export function get_default_config(): StatuslineConfig {
 		name: 'statusline',
 		data_collection: true,
 		performance_logging: false,
+		hook_logging: false,
 		display: {
 			show_cost: true,
 			show_duration: true,
@@ -135,4 +137,11 @@ export function is_performance_logging_enabled(
 ): boolean {
 	const config = load_config(project_dir);
 	return config?.performance_logging === true;
+}
+
+export function is_hook_logging_enabled(
+	project_dir?: string,
+): boolean {
+	const config = load_config(project_dir);
+	return config?.hook_logging === true;
 }

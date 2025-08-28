@@ -18,6 +18,7 @@ import {
 	process_all_pending_transcripts,
 	process_jsonl_transcript,
 } from './parsers/jsonl-parser';
+import { hook_error } from './utils/logger';
 
 // Global map to track active tool calls
 const active_tool_calls = new Map<string, number>();
@@ -40,7 +41,7 @@ const hook_event_handlers: Record<
 				data.transcript_path,
 				data.session_id,
 			).catch((error) => {
-				console.error('Background JSONL processing failed:', error);
+				hook_error('Background JSONL processing failed:', error);
 			});
 		}
 	},
@@ -57,9 +58,38 @@ const hook_event_handlers: Record<
 				data.transcript_path,
 				data.session_id,
 			).catch((error) => {
-				console.error('Final JSONL processing failed:', error);
+				hook_error('Final JSONL processing failed:', error);
 			});
 		}
+	},
+
+	session_stop: async (data: ClaudeCodeData) => {
+		// Handle Claude Code session termination
+		// This is called when Claude Code process stops
+		if (data.session_id) {
+			end_session(data.session_id, 'stopped');
+		}
+
+		// Clear any active tool call tracking
+		active_tool_calls.clear();
+
+		// Final cleanup - ensure any remaining transcript data is processed
+		if (data.transcript_path && fs.existsSync(data.transcript_path)) {
+			await process_jsonl_transcript(
+				data.transcript_path,
+				data.session_id || 'unknown',
+			).catch((error) => {
+				hook_error('Stop hook JSONL processing failed:', error);
+			});
+		}
+
+		// Process any other pending transcripts
+		await process_all_pending_transcripts().catch((error) => {
+			hook_error(
+				'Stop hook pending transcripts processing failed:',
+				error,
+			);
+		});
 	},
 
 	user_prompt_submit: async (data: ClaudeCodeData) => {
@@ -118,7 +148,7 @@ const hook_event_handlers: Record<
 				data.transcript_path,
 				data.session_id,
 			).catch((error) => {
-				console.error('Incremental JSONL processing failed:', error);
+				hook_error('Incremental JSONL processing failed:', error);
 			});
 		}
 	},
