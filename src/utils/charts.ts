@@ -222,3 +222,26 @@ export function create_activity_heatmap(
 
 	return result;
 }
+
+export function create_dashboard_box(
+	title: string,
+	content: string[],
+): string {
+	const width = Math.max(
+		40,
+		Math.max(...content.map((line) => line.length)) + 4,
+	);
+	const top_line =
+		'┌─ ' + title + ' ' + '─'.repeat(width - title.length - 4) + '┐';
+	const bottom_line = '└' + '─'.repeat(width - 2) + '┘';
+
+	let result = chalk.cyan(top_line) + '\n';
+	content.forEach((line) => {
+		const padding = ' '.repeat(Math.max(0, width - line.length - 3));
+		result +=
+			chalk.cyan('│') + ' ' + line + padding + chalk.cyan('│') + '\n';
+	});
+	result += chalk.cyan(bottom_line);
+
+	return result;
+}

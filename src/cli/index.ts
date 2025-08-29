@@ -11,14 +11,9 @@ import {
 import chalk from 'chalk';
 import { save_global_config } from '../config';
 import { get_database } from '../database';
+import { CostRow, StatsRow, ToolRow } from '../types';
 import {
-	ActivityRow,
-	CostRow,
-	SessionRow,
-	StatsRow,
-	ToolRow,
-} from '../types';
-import {
+	create_activity_heatmap,
 	create_line_chart,
 	create_summary_table,
 	create_usage_table,
@@ -177,22 +172,17 @@ async function run_analytics_dashboard() {
 				{
 					value: 'costs',
 					label: '💰 Cost Analytics',
-					hint: 'Daily spend trends and cost breakdown',
+					hint: 'Daily spend trends with ASCII line charts',
 				},
 				{
 					value: 'tools',
 					label: '🔧 Tool Usage',
-					hint: 'Most used tools and efficiency metrics',
+					hint: 'Tool usage statistics with clean tables',
 				},
 				{
 					value: 'activity',
 					label: '📈 Activity Patterns',
-					hint: 'Session timing and activity heatmaps',
-				},
-				{
-					value: 'sessions',
-					label: '⚡ Session Productivity',
-					hint: 'Duration, lines changed, efficiency',
+					hint: 'Activity heatmap with ASCII blocks',
 				},
 				{
 					value: 'back',
@@ -205,6 +195,7 @@ async function run_analytics_dashboard() {
 			break;
 		}
 
+		// Ask for days for analytics
 		const days = await text({
 			message: 'How many days to analyze?',
 			placeholder: '7',
@@ -221,19 +212,29 @@ async function run_analytics_dashboard() {
 
 		const day_count = parseInt(days as string);
 
-		switch (analytics_choice) {
-			case 'costs':
-				await show_costs_analytics(day_count);
-				break;
-			case 'tools':
-				await show_tools_analytics(day_count);
-				break;
-			case 'activity':
-				await show_activity_analytics(day_count);
-				break;
-			case 'sessions':
-				await show_sessions_analytics(day_count);
-				break;
+		try {
+			switch (analytics_choice) {
+				case 'costs':
+					await show_costs_analytics(day_count);
+					break;
+				case 'tools':
+					await show_tools_analytics(day_count);
+					break;
+				case 'activity':
+					await show_activity_analytics(day_count);
+					break;
+				default:
+					console.log(
+						chalk.red('Unknown analytics option:', analytics_choice),
+					);
+			}
+		} catch (error) {
+			console.error(chalk.red('Error running analytics:'), error);
+			console.log(
+				chalk.yellow(
+					'Please try again or select a different option.',
+				),
+			);
 		}
 
 		const continue_choice = await confirm({
@@ -278,21 +279,15 @@ async function show_costs_analytics(days: number) {
 		return;
 	}
 
-	console.log(
-		chalk.blue.bold(`\n💰 Cost Analytics (Last ${days} days)\n`),
-	);
+	console.log(chalk.blue.bold(`\nCost Trend (Last ${days} Days)\n`));
 
 	if (daily_costs.length > 1) {
-		console.log(chalk.yellow.bold('📈 Daily Cost Trend:'));
 		const costs = daily_costs.map((d) => Number(d.daily_cost));
-		const dates = daily_costs.map((d) => d.date.substring(5)); // MM-DD
-
 		const chart = create_line_chart(costs, {
 			height: 8,
 			format: (x) => '$' + x.toFixed(2),
 		});
 		console.log(chart);
-
 		console.log();
 	}
 
@@ -314,7 +309,6 @@ async function show_costs_analytics(days: number) {
 		['Daily Average', `$${(total_cost / days).toFixed(2)}`],
 	];
 
-	console.log(chalk.green.bold('📊 Summary:'));
 	console.log(create_summary_table(summary_data));
 }
 
@@ -334,9 +328,7 @@ async function show_tools_analytics(days: number) {
 				 FROM tool_calls tc2 
 				 JOIN sessions s2 ON tc2.session_id = s2.session_id
 				 WHERE s2.started_at >= datetime('now', '-${days} days')
-			   ), 1) as percentage,
-			   ROUND(AVG(tc.execution_time_ms), 0) as avg_execution_ms,
-			   SUM(CASE WHEN tc.success = 0 THEN 1 ELSE 0 END) as error_count
+			   ), 0) as percentage
 		FROM tool_calls tc
 		JOIN sessions s ON tc.session_id = s.session_id
 		WHERE s.started_at >= datetime('now', '-${days} days')
@@ -358,47 +350,19 @@ async function show_tools_analytics(days: number) {
 		return;
 	}
 
-	console.log(
-		chalk.blue.bold(
-			`\n🔧 Tool Usage Analytics (Last ${days} days)\n`,
-		),
-	);
+	console.log(chalk.blue.bold(`\nTop Tools (Last ${days} Days)\n`));
 
-	console.log(chalk.green.bold('🏆 Top Tools:'));
 	const table_data = tool_usage.map((tool) => [
 		tool.tool_name,
 		tool.usage_count.toString(),
 		`${tool.percentage}%`,
-		tool.avg_execution_ms ? `${tool.avg_execution_ms}ms` : 'N/A',
-		tool.error_count > 0
-			? chalk.red(tool.error_count.toString())
-			: chalk.green('0'),
 	]);
 
 	const table = create_usage_table(
-		['Tool', 'Count', '% Total', 'Avg Time', 'Errors'],
+		['Tool', 'Count', '% of Total'],
 		table_data,
 	);
 	console.log(table);
-
-	const total_calls = tool_usage.reduce(
-		(sum, t) => sum + t.usage_count,
-		0,
-	);
-	const total_errors = tool_usage.reduce(
-		(sum, t) => sum + t.error_count,
-		0,
-	);
-	const error_rate =
-		total_calls > 0
-			? ((total_errors / total_calls) * 100).toFixed(1)
-			: '0';
-
-	console.log(
-		chalk.cyan(
-			`\n📈 Total tool calls: ${total_calls} | Error rate: ${error_rate}%`,
-		),
-	);
 }
 
 async function show_activity_analytics(days: number) {
@@ -407,25 +371,29 @@ async function show_activity_analytics(days: number) {
 
 	const db = get_database();
 
-	const daily_activity = db
+	// Get hourly activity data for heatmap
+	const hourly_activity = db
 		.prepare(
 			`
 		SELECT 
-		  DATE(started_at) as date,
-		  COUNT(*) as session_count,
-		  SUM(duration_ms) / 1000.0 / 60.0 as total_minutes
+			strftime('%w', started_at) as day_of_week,
+			strftime('%H', started_at) as hour,
+			COUNT(*) as session_count
 		FROM sessions s
-		WHERE s.started_at >= datetime('now', '-${days} days')
+		WHERE s.started_at >= datetime('now', '-${Math.min(days, 7)} days')
 		AND s.started_at IS NOT NULL
-		GROUP BY DATE(started_at)
-		ORDER BY date DESC
+		GROUP BY strftime('%w', started_at), strftime('%H', started_at)
 	`,
 		)
-		.all() as ActivityRow[];
+		.all() as {
+		day_of_week: string;
+		hour: string;
+		session_count: number;
+	}[];
 
 	s.stop('Activity analysis complete!');
 
-	if (daily_activity.length === 0) {
+	if (hourly_activity.length === 0) {
 		console.log(
 			chalk.yellow(
 				'\nNo activity data found for the specified period.',
@@ -435,139 +403,47 @@ async function show_activity_analytics(days: number) {
 	}
 
 	console.log(
-		chalk.blue.bold(`\n📈 Activity Analytics (Last ${days} days)\n`),
+		chalk.blue.bold(
+			`\nActivity Heatmap (Last ${Math.min(days, 7)} Days)\n`,
+		),
 	);
 
-	console.log(chalk.green.bold('📊 Daily Activity:'));
-	daily_activity.forEach((day) => {
-		const minutes = Number(day.total_minutes) || 0;
-		console.log(
-			`${chalk.cyan(day.date)}: ${day.session_count} sessions, ${minutes.toFixed(1)} min`,
-		);
-	});
-
-	const total_sessions = daily_activity.reduce(
-		(sum, d) => sum + d.session_count,
-		0,
-	);
-	const total_minutes = daily_activity.reduce(
-		(sum, d) => sum + (Number(d.total_minutes) || 0),
-		0,
-	);
-	const avg_sessions_per_day =
-		daily_activity.length > 0
-			? total_sessions / daily_activity.length
-			: 0;
-
-	const summary_data = [
-		['Total Sessions', total_sessions.toString()],
-		['Total Active Time', `${(total_minutes / 60).toFixed(1)} hours`],
-		['Avg Sessions/Day', avg_sessions_per_day.toFixed(1)],
-		['Active Days', daily_activity.length.toString()],
+	// Create 2D activity grid: [day][hour]
+	const activity_grid: number[][] = [];
+	const day_labels = [
+		'Sun',
+		'Mon',
+		'Tue',
+		'Wed',
+		'Thu',
+		'Fri',
+		'Sat',
 	];
+	const hour_labels = ['0', '4', '8', '12', '16', '20', '24'];
 
-	console.log(chalk.magenta.bold('\n📋 Summary:'));
-	console.log(create_summary_table(summary_data));
-}
-
-async function show_sessions_analytics(days: number) {
-	const s = spinner();
-	s.start(`Analyzing ${days} days of session data...`);
-
-	const db = get_database();
-
-	const session_metrics = db
-		.prepare(
-			`
-		SELECT 
-		  s.started_at,
-		  s.duration_ms / 1000.0 / 60.0 as duration_minutes,
-		  s.total_cost_usd,
-		  s.total_lines_added + s.total_lines_removed as lines_changed,
-		  COUNT(tc.tool_call_id) as tool_calls,
-		  p.project_name
-		FROM sessions s
-		LEFT JOIN tool_calls tc ON s.session_id = tc.session_id
-		LEFT JOIN projects p ON s.project_id = p.project_id
-		WHERE s.started_at >= datetime('now', '-${days} days')
-		AND s.started_at IS NOT NULL
-		GROUP BY s.session_id
-		ORDER BY s.started_at DESC
-		LIMIT 10
-	`,
-		)
-		.all() as SessionRow[];
-
-	s.stop('Session analysis complete!');
-
-	if (session_metrics.length === 0) {
-		console.log(
-			chalk.yellow(
-				'\nNo session data found for the specified period.',
-			),
-		);
-		return;
+	// Initialize grid with zeros
+	for (let day = 0; day < 7; day++) {
+		activity_grid[day] = new Array(24).fill(0);
 	}
 
-	console.log(
-		chalk.blue.bold(`\n⚡ Session Analytics (Last ${days} days)\n`),
-	);
-
-	console.log(chalk.green.bold('🚀 Recent Sessions:'));
-	const session_table_data = session_metrics.map((session) => {
-		const duration = Number(session.duration_minutes) || 0;
-		const cost = Number(session.total_cost_usd) || 0;
-		const lines = session.lines_changed || 0;
-		const efficiency =
-			duration > 0 ? (lines / duration).toFixed(1) : '0';
-
-		return [
-			new Date(session.started_at).toLocaleDateString(),
-			session.project_name || 'Unknown',
-			`${duration.toFixed(1)}m`,
-			`$${cost.toFixed(2)}`,
-			lines.toString(),
-			`${efficiency} l/m`,
-		];
+	// Fill grid with actual data
+	hourly_activity.forEach((row) => {
+		const day = parseInt(row.day_of_week);
+		const hour = parseInt(row.hour);
+		activity_grid[day][hour] = row.session_count;
 	});
 
-	const session_table = create_usage_table(
-		['Date', 'Project', 'Duration', 'Cost', 'Lines', 'Efficiency'],
-		session_table_data,
-	);
-	console.log(session_table);
-
-	const total_duration = session_metrics.reduce(
-		(sum, s) => sum + (Number(s.duration_minutes) || 0),
-		0,
-	);
-	const total_cost = session_metrics.reduce(
-		(sum, s) => sum + (Number(s.total_cost_usd) || 0),
-		0,
-	);
-	const total_lines = session_metrics.reduce(
-		(sum, s) => sum + (s.lines_changed || 0),
-		0,
+	// Sample every 4 hours for display (0, 4, 8, 12, 16, 20)
+	const sampled_grid = activity_grid.map((day_row) =>
+		[0, 4, 8, 12, 16, 20].map((hour) => day_row[hour]),
 	);
 
-	const avg_duration =
-		session_metrics.length > 0
-			? total_duration / session_metrics.length
-			: 0;
-	const avg_cost =
-		session_metrics.length > 0
-			? total_cost / session_metrics.length
-			: 0;
-	const lines_per_dollar =
-		total_cost > 0 ? total_lines / total_cost : 0;
+	const heatmap = create_activity_heatmap(sampled_grid, {
+		days: day_labels,
+		hours: hour_labels.slice(0, 6), // Remove the last '24'
+	});
 
-	const productivity_data = [
-		['Avg Duration', `${avg_duration.toFixed(1)} minutes`],
-		['Avg Cost/Session', `$${avg_cost.toFixed(2)}`],
-		['Lines per $1', lines_per_dollar.toFixed(0)],
-		['Total Productivity', `${total_lines} lines changed`],
-	];
-
-	console.log(chalk.magenta.bold('\n🎯 Productivity Metrics:'));
-	console.log(create_summary_table(productivity_data));
+	console.log(heatmap);
 }
+
+// Clean implementations following CONSOLE-GRAPHS.md specification will be added here
