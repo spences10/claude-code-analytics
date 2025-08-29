@@ -48,6 +48,12 @@ export async function process_jsonl_transcript(
 
 	try {
 		const position_record = get_processing_position(transcript_path);
+		if (!position_record) {
+			console.error(
+				`Could not get processing position for ${transcript_path}`,
+			);
+			return;
+		}
 		const start_position = force_reprocess
 			? 0
 			: position_record.last_processed_position;

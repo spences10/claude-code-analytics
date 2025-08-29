@@ -1,4 +1,4 @@
-import { get_database } from '../connection';
+import { with_database } from '../connection';
 
 export function record_message(
 	session_id: string,
@@ -12,9 +12,7 @@ export function record_message(
 ): void {
 	if (!session_id || message_index < 0) return;
 
-	try {
-		const db = get_database();
-
+	with_database((db) => {
 		const stmt = db.prepare(`
 			INSERT OR REPLACE INTO messages (
 				session_id, message_index, role, content_preview, timestamp,
@@ -33,9 +31,5 @@ export function record_message(
 			cost_usd || null,
 			has_tool_calls ? 1 : 0,
 		);
-
-		db.close();
-	} catch (error) {
-		console.error('Failed to record message:', error);
-	}
+	}, 'record message');
 }

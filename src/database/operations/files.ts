@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { get_database } from '../connection';
+import { with_database } from '../connection';
 
 export function record_file_operation(
 	session_id: string,
@@ -10,9 +10,7 @@ export function record_file_operation(
 ): void {
 	if (!session_id || !file_path) return;
 
-	try {
-		const db = get_database();
-
+	with_database((db) => {
 		// Get or create project first
 		const project_path = process.cwd(); // Use current working directory
 		const project_name = path.basename(project_path);
@@ -75,9 +73,5 @@ export function record_file_operation(
 			Math.abs(lines_changed),
 			file.file_id,
 		);
-
-		db.close();
-	} catch (error) {
-		console.error('Failed to record file operation:', error);
-	}
+	}, 'record file operation');
 }

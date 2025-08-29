@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { get_database } from '../connection';
+import { with_database } from '../connection';
 import type { ClaudeCodeData } from '../types';
 
 export function insert_hook_event(
@@ -9,9 +9,7 @@ export function insert_hook_event(
 	event_data: ClaudeCodeData,
 	tool_name?: string,
 ): void {
-	try {
-		const db = get_database();
-
+	with_database((db) => {
 		// Create lightweight performance-focused event data
 		const performance_data = {
 			execution_time_ms,
@@ -36,42 +34,30 @@ export function insert_hook_event(
 			tool_name || null,
 			JSON.stringify(performance_data),
 		);
-
-		db.close();
-	} catch (error) {
-		// Graceful fallback - log error but don't crash
-		console.error('Failed to insert hook event:', error);
-	}
+	}, 'insert hook event');
 }
 
 export function insert_or_update_project(
 	project_path: string,
 	project_name: string,
 ): void {
-	try {
-		const db = get_database();
-
+	with_database((db) => {
 		const stmt = db.prepare(`
 			INSERT OR IGNORE INTO projects (project_path, project_name)
 			VALUES (?, ?)
 		`);
 
 		stmt.run(project_path, project_name);
-		db.close();
-	} catch (error) {
-		console.error('Failed to insert/update project:', error);
-	}
+	}, 'insert/update project');
 }
 
 export function insert_or_update_session(data: ClaudeCodeData): void {
 	if (!data.session_id || !data.cwd) return;
 
-	try {
-		const db = get_database();
-
+	with_database((db) => {
 		// Ensure project exists first
-		const project_name = path.basename(data.cwd);
-		insert_or_update_project(data.cwd, project_name);
+		const project_name = path.basename(data.cwd!);
+		insert_or_update_project(data.cwd!, project_name);
 
 		// Insert or update session
 		const stmt = db.prepare(`
@@ -103,19 +89,13 @@ export function insert_or_update_session(data: ClaudeCodeData): void {
 		];
 
 		stmt.run(...params);
-
-		db.close();
-	} catch (error) {
-		console.error('Failed to insert/update session:', error);
-	}
+	}, 'insert/update session');
 }
 
 export function update_session_metrics(data: ClaudeCodeData): void {
 	if (!data.session_id) return;
 
-	try {
-		const db = get_database();
-
+	with_database((db) => {
 		const stmt = db.prepare(`
 			UPDATE sessions 
 			SET last_active_at = ?, 
@@ -136,11 +116,7 @@ export function update_session_metrics(data: ClaudeCodeData): void {
 			data.exceeds_200k_tokens,
 			data.session_id,
 		);
-
-		db.close();
-	} catch (error) {
-		console.error('Failed to update session metrics:', error);
-	}
+	}, 'update session metrics');
 }
 
 export function end_session(
@@ -149,9 +125,7 @@ export function end_session(
 ): void {
 	if (!session_id) return;
 
-	try {
-		const db = get_database();
-
+	with_database((db) => {
 		// Calculate final duration based on started_at and current time
 		const stmt = db.prepare(`
 			UPDATE sessions 
@@ -163,9 +137,5 @@ export function end_session(
 
 		const now = new Date().toISOString();
 		stmt.run(now, end_reason || 'normal', now, session_id);
-
-		db.close();
-	} catch (error) {
-		console.error('Failed to end session:', error);
-	}
+	}, 'end session');
 }

@@ -1,6 +1,4 @@
-import chalk from 'chalk';
-import { get_database } from '../../database';
-import { create_usage_table } from '../../utils/charts';
+import { show_analytics_report } from './utils';
 
 interface ModelRow {
 	model_name: string;
@@ -12,11 +10,7 @@ interface ModelRow {
 }
 
 export async function show_models_analytics(days: number) {
-	const db = get_database();
-
-	const models_data = db
-		.prepare(
-			`
+	const query = `
 		SELECT 
 			COALESCE(model_display_name, 'Unknown') as model_name,
 			COUNT(*) as session_count,
@@ -33,32 +27,25 @@ export async function show_models_analytics(days: number) {
 		AND started_at IS NOT NULL
 		GROUP BY model_display_name
 		ORDER BY session_count DESC
-	`,
-		)
-		.all() as ModelRow[];
+	`;
 
-	if (models_data.length === 0) {
-		console.log(
-			chalk.yellow('\nNo model data found for the specified period.'),
-		);
-		return;
-	}
-
-	console.log(
-		chalk.blue.bold(`\nModel Performance (Last ${days} Days)\n`),
-	);
-
-	const table_data = models_data.map((model) => [
-		model.model_name,
-		model.session_count.toString(),
-		`$${Number(model.total_cost || 0).toFixed(2)}`,
-		`$${Number(model.avg_cost_per_session || 0).toFixed(3)}`,
-		model.efficiency_score.toFixed(1),
-	]);
-
-	const table = create_usage_table(
-		['Model', 'Sessions', 'Total Cost', 'Avg/Session', 'Lines/$'],
-		table_data,
-	);
-	console.log(table);
+	show_analytics_report<ModelRow>({
+		title: 'Model Performance',
+		query,
+		days,
+		table_headers: [
+			'Model',
+			'Sessions',
+			'Total Cost',
+			'Avg/Session',
+			'Lines/$',
+		],
+		data_mapper: (model) => [
+			model.model_name,
+			model.session_count.toString(),
+			`$${Number(model.total_cost || 0).toFixed(2)}`,
+			`$${Number(model.avg_cost_per_session || 0).toFixed(3)}`,
+			model.efficiency_score.toFixed(1),
+		],
+	});
 }

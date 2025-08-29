@@ -1,4 +1,4 @@
-import { get_database } from '../connection';
+import { with_database } from '../connection';
 
 export interface ProcessingPosition {
 	transcript_path: string;
@@ -9,10 +9,8 @@ export interface ProcessingPosition {
 
 export function get_processing_position(
 	transcript_path: string,
-): ProcessingPosition {
-	const db = get_database();
-
-	try {
+): ProcessingPosition | undefined {
+	return with_database((db) => {
 		const stmt = db.prepare(
 			'SELECT * FROM processing_state WHERE transcript_path = ?',
 		);
@@ -37,18 +35,14 @@ export function get_processing_position(
 			last_processed_at: new Date().toISOString(),
 			status: 'pending',
 		};
-	} finally {
-		db.close();
-	}
+	}, 'get processing position');
 }
 
 export function update_processing_position(
 	transcript_path: string,
 	position: number,
 ): void {
-	const db = get_database();
-
-	try {
+	with_database((db) => {
 		const stmt = db.prepare(`
 			UPDATE processing_state 
 			SET last_processed_position = ?, last_processed_at = ?
@@ -56,18 +50,14 @@ export function update_processing_position(
 		`);
 
 		stmt.run(position, new Date().toISOString(), transcript_path);
-	} finally {
-		db.close();
-	}
+	}, 'update processing position');
 }
 
 export function update_processing_status(
 	transcript_path: string,
 	status: ProcessingPosition['status'],
 ): void {
-	const db = get_database();
-
-	try {
+	with_database((db) => {
 		const stmt = db.prepare(`
 			UPDATE processing_state 
 			SET status = ?, last_processed_at = ?
@@ -75,30 +65,26 @@ export function update_processing_status(
 		`);
 
 		stmt.run(status, new Date().toISOString(), transcript_path);
-	} finally {
-		db.close();
-	}
+	}, 'update processing status');
 }
 
 export function get_pending_transcripts(): Array<{
 	transcript_path: string;
 	session_id: string;
 }> {
-	const db = get_database();
+	return (
+		with_database((db) => {
+			const stmt = db.prepare(`
+				SELECT ps.transcript_path, s.session_id
+				FROM processing_state ps
+				LEFT JOIN sessions s ON s.transcript_path = ps.transcript_path
+				WHERE ps.status IN ('pending', 'error') AND s.session_id IS NOT NULL
+			`);
 
-	try {
-		const stmt = db.prepare(`
-			SELECT ps.transcript_path, s.session_id
-			FROM processing_state ps
-			LEFT JOIN sessions s ON s.transcript_path = ps.transcript_path
-			WHERE ps.status IN ('pending', 'error') AND s.session_id IS NOT NULL
-		`);
-
-		return stmt.all() as Array<{
-			transcript_path: string;
-			session_id: string;
-		}>;
-	} finally {
-		db.close();
-	}
+			return stmt.all() as Array<{
+				transcript_path: string;
+				session_id: string;
+			}>;
+		}, 'get pending transcripts') || []
+	);
 }

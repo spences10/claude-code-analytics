@@ -1,4 +1,4 @@
-import { get_database } from '../connection';
+import { with_database } from '../connection';
 
 export function start_tool_call(
 	session_id: string,
@@ -7,43 +7,38 @@ export function start_tool_call(
 ): number | null {
 	if (!session_id || !tool_name) return null;
 
-	try {
-		const db = get_database();
+	return (
+		with_database((db) => {
+			// Check if this tool call is already tracked by tool_use_id
+			if (tool_use_id) {
+				const existing = db
+					.prepare(
+						'SELECT tool_call_id FROM tool_calls WHERE session_id = ? AND tool_use_id = ?',
+					)
+					.get(session_id, tool_use_id) as
+					| { tool_call_id: number }
+					| undefined;
 
-		// Check if this tool call is already tracked by tool_use_id
-		if (tool_use_id) {
-			const existing = db
-				.prepare(
-					'SELECT tool_call_id FROM tool_calls WHERE session_id = ? AND tool_use_id = ?',
-				)
-				.get(session_id, tool_use_id) as
-				| { tool_call_id: number }
-				| undefined;
-
-			if (existing) {
-				db.close();
-				return existing.tool_call_id;
+				if (existing) {
+					return existing.tool_call_id;
+				}
 			}
-		}
 
-		const stmt = db.prepare(`
+			const stmt = db.prepare(`
 			INSERT INTO tool_calls (session_id, tool_name, tool_use_id, started_at)
 			VALUES (?, ?, ?, ?)
 		`);
 
-		const result = stmt.run(
-			session_id,
-			tool_name,
-			tool_use_id || null,
-			new Date().toISOString(),
-		);
+			const result = stmt.run(
+				session_id,
+				tool_name,
+				tool_use_id || null,
+				new Date().toISOString(),
+			);
 
-		db.close();
-		return result.lastInsertRowid as number;
-	} catch (error) {
-		console.error('Failed to start tool call:', error);
-		return null;
-	}
+			return result.lastInsertRowid as number;
+		}, 'start tool call') || null
+	);
 }
 
 export function end_tool_call(
@@ -53,9 +48,7 @@ export function end_tool_call(
 ): void {
 	if (!tool_call_id) return;
 
-	try {
-		const db = get_database();
-
+	with_database((db) => {
 		const stmt = db.prepare(`
 			UPDATE tool_calls 
 			SET completed_at = ?,
@@ -66,12 +59,14 @@ export function end_tool_call(
 		`);
 
 		const now = new Date().toISOString();
-		stmt.run(now, now, success, error_message || null, tool_call_id);
-
-		db.close();
-	} catch (error) {
-		console.error('Failed to end tool call:', error);
-	}
+		stmt.run(
+			now,
+			now,
+			success ? 1 : 0,
+			error_message || null,
+			tool_call_id,
+		);
+	}, 'end tool call');
 }
 
 export function end_tool_call_by_use_id(
@@ -82,9 +77,7 @@ export function end_tool_call_by_use_id(
 ): void {
 	if (!session_id || !tool_use_id) return;
 
-	try {
-		const db = get_database();
-
+	with_database((db) => {
 		const stmt = db.prepare(`
 			UPDATE tool_calls 
 			SET completed_at = ?,
@@ -103,9 +96,5 @@ export function end_tool_call_by_use_id(
 			session_id,
 			tool_use_id,
 		);
-
-		db.close();
-	} catch (error) {
-		console.error('Failed to end tool call by use_id:', error);
-	}
+	}, 'end tool call by use_id');
 }

@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { get_database } from '../../database';
 import { create_usage_table } from '../../utils/charts';
+import { show_analytics_report } from './utils';
 
 interface HookPerformanceRow {
 	event_type: string;
@@ -21,11 +22,7 @@ interface ToolSuccessRow {
 }
 
 export async function show_performance_analytics(days: number) {
-	const db = get_database();
-
-	const hook_performance = db
-		.prepare(
-			`
+	const query = `
 		SELECT 
 			event_type,
 			COUNT(*) as total_events,
@@ -37,46 +34,27 @@ export async function show_performance_analytics(days: number) {
 		AND execution_time_ms > 0
 		GROUP BY event_type
 		ORDER BY avg_execution_time DESC
-	`,
-		)
-		.all() as HookPerformanceRow[];
+	`;
 
-	if (hook_performance.length === 0) {
-		console.log(
-			chalk.yellow(
-				'\nNo hook performance data found for the specified period.',
-			),
-		);
-		return;
-	}
-
-	console.log(
-		chalk.blue.bold(`\nHook Performance (Last ${days} Days)\n`),
-	);
-
-	const table_data = hook_performance.map((hook) => [
-		hook.event_type,
-		hook.total_events.toString(),
-		`${hook.avg_execution_time.toFixed(2)}ms`,
-		`${hook.max_execution_time}ms`,
-		`${hook.total_time_spent.toFixed(0)}ms`,
-	]);
-
-	const table = create_usage_table(
-		['Hook Type', 'Count', 'Avg Time', 'Max Time', 'Total'],
-		table_data,
-	);
-	console.log(table);
-
-	const total_hook_time = hook_performance.reduce(
-		(sum, h) => sum + h.total_time_spent,
-		0,
-	);
-	console.log(
-		chalk.cyan(
-			`\nTotal Hook Overhead: ${total_hook_time.toFixed(0)}ms`,
-		),
-	);
+	show_analytics_report<HookPerformanceRow>({
+		title: 'Hook Performance',
+		query,
+		days,
+		table_headers: [
+			'Hook Type',
+			'Count',
+			'Avg Time',
+			'Max Time',
+			'Total',
+		],
+		data_mapper: (hook) => [
+			hook.event_type,
+			hook.total_events.toString(),
+			`${hook.avg_execution_time.toFixed(2)}ms`,
+			`${hook.max_execution_time}ms`,
+			`${hook.total_time_spent.toFixed(0)}ms`,
+		],
+	});
 }
 
 export async function show_tool_success_analytics(days: number) {

@@ -1,6 +1,5 @@
 import chalk from 'chalk';
-import { get_database } from '../../database';
-import { create_usage_table } from '../../utils/charts';
+import { show_analytics_report } from './utils';
 
 interface ProjectRow {
 	project_name: string;
@@ -12,11 +11,7 @@ interface ProjectRow {
 }
 
 export async function show_projects_analytics(days: number) {
-	const db = get_database();
-
-	const projects_data = db
-		.prepare(
-			`
+	const query = `
 		SELECT 
 			p.project_name,
 			COUNT(DISTINCT s.session_id) as session_count,
@@ -34,38 +29,30 @@ export async function show_projects_analytics(days: number) {
 		AND s.started_at IS NOT NULL
 		GROUP BY p.project_id, p.project_name
 		ORDER BY session_count DESC
-	`,
-		)
-		.all() as ProjectRow[];
+	`;
 
-	if (projects_data.length === 0) {
-		console.log(
-			chalk.yellow(
-				'\nNo project data found for the specified period.',
-			),
-		);
-		return;
-	}
+	show_analytics_report<ProjectRow>({
+		title: 'Project Intelligence',
+		query,
+		days,
+		table_headers: [
+			'Project',
+			'Sessions',
+			'Cost',
+			'Lines',
+			'Prod Score',
+		],
+		data_mapper: (project) => [
+			project.project_name.length > 25
+				? '...' + project.project_name.slice(-22)
+				: project.project_name,
+			project.session_count.toString(),
+			`${Number(project.total_cost || 0).toFixed(2)}`,
+			project.total_lines.toString(),
+			project.productivity_score.toFixed(1),
+		],
+	});
 
-	console.log(
-		chalk.blue.bold(`\nProject Intelligence (Last ${days} Days)\n`),
-	);
-
-	const table_data = projects_data.map((project) => [
-		project.project_name.length > 25
-			? '...' + project.project_name.slice(-22)
-			: project.project_name,
-		project.session_count.toString(),
-		`$${Number(project.total_cost || 0).toFixed(2)}`,
-		project.total_lines.toString(),
-		project.productivity_score.toFixed(1),
-	]);
-
-	const table = create_usage_table(
-		['Project', 'Sessions', 'Cost', 'Lines', 'Prod Score'],
-		table_data,
-	);
-	console.log(table);
 	console.log(
 		chalk.dim('\nProd Score = Lines changed per dollar spent'),
 	);

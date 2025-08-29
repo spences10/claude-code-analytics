@@ -1,6 +1,4 @@
-import chalk from 'chalk';
-import { get_database } from '../../database';
-import { create_usage_table } from '../../utils/charts';
+import { show_analytics_report } from './utils';
 
 interface FileRow {
 	file_path: string;
@@ -11,11 +9,7 @@ interface FileRow {
 }
 
 export async function show_files_analytics(days: number) {
-	const db = get_database();
-
-	const files_data = db
-		.prepare(
-			`
+	const query = `
 		SELECT 
 			f.file_path,
 			f.total_lines_changed,
@@ -30,35 +24,20 @@ export async function show_files_analytics(days: number) {
 		GROUP BY f.file_id
 		ORDER BY f.total_write_operations DESC
 		LIMIT 15
-	`,
-		)
-		.all() as FileRow[];
+	`;
 
-	if (files_data.length === 0) {
-		console.log(
-			chalk.yellow(
-				'\nNo file operation data found for the specified period.',
-			),
-		);
-		return;
-	}
-
-	console.log(
-		chalk.blue.bold(`\nFile Operations (Last ${days} Days)\n`),
-	);
-
-	const table_data = files_data.map((file) => [
-		file.file_path.length > 30
-			? '...' + file.file_path.slice(-27)
-			: file.file_path,
-		file.read_ops.toString(),
-		file.write_ops.toString(),
-		file.last_accessed ? file.last_accessed.split(' ')[0] : 'N/A',
-	]);
-
-	const table = create_usage_table(
-		['File Path', 'Reads', 'Writes', 'Last Access'],
-		table_data,
-	);
-	console.log(table);
+	show_analytics_report<FileRow>({
+		title: 'File Operations',
+		query,
+		days,
+		table_headers: ['File Path', 'Reads', 'Writes', 'Last Access'],
+		data_mapper: (file) => [
+			file.file_path.length > 30
+				? '...' + file.file_path.slice(-27)
+				: file.file_path,
+			file.read_ops.toString(),
+			file.write_ops.toString(),
+			file.last_accessed ? file.last_accessed.split(' ')[0] : 'N/A',
+		],
+	});
 }
