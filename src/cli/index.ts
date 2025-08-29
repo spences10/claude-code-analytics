@@ -445,5 +445,3 @@ async function show_activity_analytics(days: number) {
 
 	console.log(heatmap);
 }
-
-// Clean implementations following CONSOLE-GRAPHS.md specification will be added here
