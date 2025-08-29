@@ -1,6 +1,7 @@
 import type Database from 'better-sqlite3';
 import fs from 'node:fs';
 import path from 'node:path';
+import type { Migration } from './types/migration';
 
 export function ensure_schema_exists(db: Database.Database): boolean {
 	try {
@@ -14,10 +15,12 @@ export function ensure_schema_exists(db: Database.Database): boolean {
 		// If no core tables exist, initialize schema
 		if (existing_tables.length === 0) {
 			initialize_database_schema(db);
+			initialize_schema_version(db);
 			return true;
 		}
 
-		// TODO: Add schema version checking and migrations here
+		// Run migrations if needed
+		run_pending_migrations(db);
 		return false;
 	} catch (error) {
 		console.error('Failed to check database schema:', error);
@@ -91,4 +94,101 @@ export function validate_table_exists(
 	} catch {
 		return false;
 	}
+}
+
+function initialize_schema_version(db: Database.Database): void {
+	// Create schema_version table to track migrations
+	db.exec(`
+		CREATE TABLE IF NOT EXISTS schema_version (
+			version INTEGER PRIMARY KEY,
+			applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			description TEXT
+		)
+	`);
+
+	// Set initial version to 0
+	db.prepare(
+		`
+		INSERT OR IGNORE INTO schema_version (version, description)
+		VALUES (0, 'Initial schema creation')
+	`,
+	).run();
+}
+
+function get_current_schema_version(db: Database.Database): number {
+	try {
+		// Ensure schema_version table exists
+		if (!validate_table_exists(db, 'schema_version')) {
+			initialize_schema_version(db);
+			return 0;
+		}
+
+		const result = db
+			.prepare(
+				`
+			SELECT MAX(version) as version FROM schema_version
+		`,
+			)
+			.get() as any;
+
+		return result?.version || 0;
+	} catch {
+		return 0;
+	}
+}
+
+function run_pending_migrations(db: Database.Database): void {
+	const current_version = get_current_schema_version(db);
+	const available_migrations = get_available_migrations();
+
+	const pending_migrations = available_migrations.filter(
+		(migration) => migration.version > current_version,
+	);
+
+	if (pending_migrations.length === 0) {
+		return;
+	}
+
+	console.log(
+		`📦 Running ${pending_migrations.length} pending migration(s)...`,
+	);
+
+	// Sort by version to ensure correct order
+	pending_migrations.sort((a, b) => a.version - b.version);
+
+	for (const migration of pending_migrations) {
+		console.log(
+			`🔄 Applying migration ${migration.version}: ${migration.name}`,
+		);
+
+		try {
+			db.transaction(() => {
+				migration.up(db);
+
+				// Record migration as applied
+				db.prepare(
+					`
+					INSERT INTO schema_version (version, description)
+					VALUES (?, ?)
+				`,
+				).run(migration.version, migration.description);
+			})();
+
+			console.log(
+				`✅ Migration ${migration.version} completed successfully`,
+			);
+		} catch (error) {
+			console.error(
+				`❌ Migration ${migration.version} failed:`,
+				error,
+			);
+			throw error;
+		}
+	}
+}
+
+function get_available_migrations(): Migration[] {
+	// No migrations currently available
+	// Future migrations will be imported here
+	return [];
 }

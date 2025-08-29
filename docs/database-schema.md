@@ -24,7 +24,9 @@ updates.
 - `tool_calls` - Tool execution tracking
 - `files` - File access patterns
 - `file_operations` - Individual file changes
-- `hook_events` - Raw hook performance data
+- `hook_events` - Lightweight performance metrics (not full event
+  data)
+- `schema_version` - Database migration tracking
 - `processing_state` - JSONL processing tracking
 
 ### Key Performance Optimizations
@@ -62,7 +64,40 @@ FROM tool_calls GROUP BY tool_name;
 
 ## Performance Characteristics
 
-- **Hook overhead**: ~1ms per event (single INSERT)
+- **Hook overhead**: ~0.1ms per event (single INSERT with minimal
+  data)
 - **Statusline queries**: <1ms (indexed lookups)
 - **Analytics**: Scales with session count, not conversation length
 - **Storage**: ~1KB per session vs. ~200KB+ JSONL files
+
+## Database Maintenance
+
+### Migration System
+
+The database includes an automatic migration system to handle schema
+updates:
+
+- `schema_version` table tracks applied migrations
+- Migrations run automatically on database connection
+- Each migration is atomic and logged
+
+### Storage Optimization
+
+**Hook Events Data Policy** (as of Migration 001):
+
+- Only stores essential performance metrics
+- Event data limited to: `execution_time_ms`, `success`,
+  `error_message`, `file_path`, `lines_changed`
+- Full conversation context is stored in `messages` and `tool_calls`
+  tables
+- Previous redundant JSON blobs have been cleaned up
+
+**Recommended Maintenance**:
+
+```sql
+-- Run VACUUM quarterly to reclaim space
+VACUUM;
+
+-- Check database size
+SELECT page_count * page_size / 1024.0 / 1024.0 as size_mb FROM pragma_page_count(), pragma_page_size();
+```

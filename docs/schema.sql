@@ -94,8 +94,9 @@ CREATE TABLE file_operations (
     FOREIGN KEY (tool_call_id) REFERENCES tool_calls(tool_call_id)
 );
 
--- Hook Events: Raw performance and lifecycle data from hooks
+-- Hook Events: Lightweight performance metrics from hooks
 -- No foreign key constraint - hooks can fire before sessions exist
+-- Note: event_data now contains only essential performance metrics, not full conversation context
 CREATE TABLE hook_events (
     event_id INTEGER PRIMARY KEY,
     session_id TEXT NOT NULL,
@@ -103,7 +104,7 @@ CREATE TABLE hook_events (
     timestamp TIMESTAMP,
     execution_time_ms INTEGER DEFAULT 0,
     tool_name TEXT,
-    event_data TEXT -- JSON for additional context
+    event_data TEXT -- JSON containing: execution_time_ms, success, error_message, file_path, lines_changed
 );
 
 -- Processing State: Track incremental JSONL processing positions
@@ -112,6 +113,14 @@ CREATE TABLE processing_state (
     last_processed_position INTEGER DEFAULT 0,
     last_processed_at TIMESTAMP,
     status TEXT DEFAULT 'pending' -- pending, processing, completed, error
+);
+
+
+-- Schema Version: Track database migrations
+CREATE TABLE schema_version (
+    version INTEGER PRIMARY KEY,
+    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    description TEXT
 );
 
 -- Performance indexes for real-time queries

@@ -12,6 +12,17 @@ export function insert_hook_event(
 	try {
 		const db = get_database();
 
+		// Create lightweight performance-focused event data
+		const performance_data = {
+			execution_time_ms,
+			tool_name: tool_name || null,
+			success: !event_data.error_message,
+			error_message: event_data.error_message || null,
+			// Only include essential context, not full conversation data
+			file_path: event_data.file_path || null,
+			lines_changed: event_data.lines_changed || null,
+		};
+
 		const stmt = db.prepare(`
 			INSERT INTO hook_events (session_id, event_type, timestamp, execution_time_ms, tool_name, event_data)
 			VALUES (?, ?, ?, ?, ?, ?)
@@ -23,7 +34,7 @@ export function insert_hook_event(
 			new Date().toISOString(),
 			execution_time_ms,
 			tool_name || null,
-			JSON.stringify(event_data),
+			JSON.stringify(performance_data),
 		);
 
 		db.close();
