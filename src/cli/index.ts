@@ -88,9 +88,25 @@ export async function run_cli() {
 	if (main_action === 'configure') {
 		const result = await run_configuration();
 		if (result) {
-			outro(
-				`Configuration "${result.name}" saved!\nData collection: ${result.data_collection}\nPerformance logging: ${result.performance_logging}`,
-			);
+			if (result.action === 'install') {
+				const components_text = (result.components as string[]).join(
+					' and ',
+				);
+				outro(
+					`✅ ${components_text} installed successfully!\nYour Claude Code integration is now active.`,
+				);
+			} else if (result.action === 'uninstall') {
+				const components_text = (result.components as string[]).join(
+					' and ',
+				);
+				outro(
+					`🗑️  ${components_text} uninstalled successfully!\nComponents have been removed from Claude Code.`,
+				);
+			} else if (result.action === 'settings') {
+				outro(
+					`Configuration "${result.name}" saved!\nData collection: ${result.data_collection}\nPerformance logging: ${result.performance_logging}`,
+				);
+			}
 		} else {
 			outro('No configuration changes made.');
 		}

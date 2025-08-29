@@ -65,11 +65,25 @@ working**
 
 ### Configuration & Setup
 
-- [ ] **Config Management** - Centralized configuration system
-  - [ ] User preferences and settings
-  - [ ] Data source paths and polling intervals
-  - [ ] Feature toggles and customization options
-  - [ ] Environment-specific configurations
+- [x] **Config Management** - Centralized configuration system
+  - [x] User preferences and settings
+  - [x] Data source paths and polling intervals
+  - [x] Feature toggles and customization options
+  - [x] Environment-specific configurations
+- [x] **Hook & Statusline Installation** - Package-ready installation
+      system
+  - [x] Selective component installation (statusline and/or hooks)
+  - [x] Package binary references instead of hardcoded paths
+  - [x] Clean uninstallation with component selection
+  - [x] Interactive CLI with multiselect for component choice
+
+- [ ] **Configure Statusline Display** - Advanced statusline
+      customization
+  - [ ] Real-time display configuration options
+  - [ ] Custom format strings and templates
+  - [ ] Color themes and styling options
+  - [ ] Dynamic content based on session context
+  - [ ] Performance thresholds and warning indicators
 
 - [ ] **CLI Foundation** - Extensible command structure
   - [ ] Base CLI framework with subcommands
