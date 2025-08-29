@@ -191,34 +191,109 @@ export function create_activity_heatmap(
 	data: number[][],
 	labels?: { days: string[]; hours: string[] },
 ): string {
-	const chars = ['░░', '▓▓', '██']; // Low, medium, high activity
-	const max_value = Math.max(...data.flat());
+	const chars = [
+		chalk.gray('░░'), // No/Low activity - gray
+		chalk.yellow('▓▓'), // Medium activity - yellow
+		chalk.green('██'), // High activity - green
+	];
+
+	const flat_data = data.flat().filter((v) => v > 0); // Only non-zero values
+	if (flat_data.length === 0) {
+		// All zeros, show as low activity
+		let result = '';
+
+		if (labels?.hours) {
+			let header_line = '    ';
+			labels.hours.forEach((hour, index) => {
+				header_line += hour;
+				if (index < labels.hours.length - 1) {
+					header_line += ' ';
+				}
+			});
+			result += header_line + '\n';
+		}
+
+		data.forEach((row, dayIndex) => {
+			const day_label = labels?.days?.[dayIndex] || `Day ${dayIndex}`;
+			let line = day_label.padEnd(3) + ' ';
+			row.forEach((_, index) => {
+				line += chars[0]; // All gray
+				if (index < row.length - 1) {
+					line += ' ';
+				}
+			});
+			result += line + '\n';
+		});
+
+		result +=
+			'\n' +
+			chalk.green('██') +
+			' High  ' +
+			chalk.yellow('▓▓') +
+			' Medium  ' +
+			chalk.gray('░░') +
+			' Low/None';
+		return result;
+	}
+
+	const max_value = Math.max(...flat_data);
+	const min_value = Math.min(...flat_data);
+
+	// Better intensity calculation with thresholds
+	const get_intensity = (value: number): number => {
+		if (value === 0) return 0; // Gray for zero
+		if (max_value === min_value) return 1; // All same non-zero value = medium
+
+		// Create better thresholds - ensure non-zero values are always visible
+		const range = max_value - min_value;
+		const high_threshold = min_value + range * 0.66;
+
+		if (value >= high_threshold) return 2; // Green for high
+		if (value > 0) return 1; // Yellow for any non-zero activity
+		return 0; // Gray for zero only
+	};
 
 	let result = '';
 
-	// Header with hours
+	// Header with hours - properly spaced double-digit hours
 	if (labels?.hours) {
-		result += '     ' + labels.hours.join('  ') + '\n';
+		let header_line = '    ';
+		labels.hours.forEach((hour, index) => {
+			header_line += hour;
+			if (index < labels.hours.length - 1) {
+				header_line += ' ';
+			}
+		});
+		result += header_line + '\n';
 	}
 
 	// Heatmap rows
 	data.forEach((row, dayIndex) => {
 		const day_label = labels?.days?.[dayIndex] || `Day ${dayIndex}`;
-		let line = day_label.padEnd(5);
+		let line = day_label.padEnd(3) + ' ';
 
-		row.forEach((value) => {
-			const intensity =
-				max_value > 0
-					? Math.floor((value / max_value) * (chars.length - 1))
-					: 0;
-			line += chars[intensity] + ' ';
+		row.forEach((value, index) => {
+			const intensity = get_intensity(value);
+			line += chars[intensity];
+			if (index < row.length - 1) {
+				line += ' ';
+			}
 		});
 
 		result += line + '\n';
 	});
 
-	// Legend
-	result += '\n██ High Activity  ▓▓ Medium  ░░ Low';
+	// Legend with colors and value info
+	result +=
+		'\n' +
+		chalk.green('██') +
+		` High (${Math.ceil(max_value * 0.66)}+)  ` +
+		chalk.yellow('▓▓') +
+		` Medium (${Math.ceil(max_value * 0.33)}-${Math.ceil(max_value * 0.66)})  ` +
+		chalk.gray('░░') +
+		' Low (0-' +
+		Math.ceil(max_value * 0.33) +
+		')';
 
 	return result;
 }
