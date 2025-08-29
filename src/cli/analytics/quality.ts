@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { get_database } from '../../database';
-import { create_summary_table, create_usage_table } from '../../utils/charts';
+import { create_usage_table } from '../../utils/charts';
 
 interface SessionQualityRow {
 	session_id: string;
@@ -46,12 +46,16 @@ export async function show_session_quality_analytics(days: number) {
 
 	if (session_quality.length === 0) {
 		console.log(
-			chalk.yellow('\nNo session quality data found for the specified period.'),
+			chalk.yellow(
+				'\nNo session quality data found for the specified period.',
+			),
 		);
 		return;
 	}
 
-	console.log(chalk.blue.bold(`\nSession Quality (Last ${days} Days)\n`));
+	console.log(
+		chalk.blue.bold(`\nSession Quality (Last ${days} Days)\n`),
+	);
 
 	const table_data = session_quality.map((session) => [
 		session.session_id.slice(-8),
@@ -64,15 +68,33 @@ export async function show_session_quality_analytics(days: number) {
 	]);
 
 	const table = create_usage_table(
-		['Session', 'Duration', 'Cost', 'Lines', 'Tools', 'Success', 'End'],
+		[
+			'Session',
+			'Duration',
+			'Cost',
+			'Lines',
+			'Tools',
+			'Success',
+			'End',
+		],
 		table_data,
 	);
 	console.log(table);
 
-	const avg_duration = session_quality.reduce((sum, s) => sum + s.duration_minutes, 0) / session_quality.length;
-	const avg_success_rate = session_quality.reduce((sum, s) => sum + (s.success_rate || 0), 0) / session_quality.length;
+	const avg_duration =
+		session_quality.reduce((sum, s) => sum + s.duration_minutes, 0) /
+		session_quality.length;
+	const avg_success_rate =
+		session_quality.reduce(
+			(sum, s) => sum + (s.success_rate || 0),
+			0,
+		) / session_quality.length;
 
-	console.log(chalk.cyan(`\nAvg Session: ${avg_duration.toFixed(1)}min, ${avg_success_rate.toFixed(1)}% success rate`));
+	console.log(
+		chalk.cyan(
+			`\nAvg Session: ${avg_duration.toFixed(1)}min, ${avg_success_rate.toFixed(1)}% success rate`,
+		),
+	);
 }
 
 export async function show_error_analysis(days: number) {
@@ -105,7 +127,9 @@ export async function show_error_analysis(days: number) {
 		return;
 	}
 
-	console.log(chalk.blue.bold(`\nError Analysis (Last ${days} Days)\n`));
+	console.log(
+		chalk.blue.bold(`\nError Analysis (Last ${days} Days)\n`),
+	);
 
 	const table_data = error_analysis.map((error) => [
 		error.tool_name,
@@ -122,6 +146,9 @@ export async function show_error_analysis(days: number) {
 	);
 	console.log(table);
 
-	const total_errors = error_analysis.reduce((sum, e) => sum + e.error_count, 0);
+	const total_errors = error_analysis.reduce(
+		(sum, e) => sum + e.error_count,
+		0,
+	);
 	console.log(chalk.red(`\nTotal Errors Analyzed: ${total_errors}`));
 }

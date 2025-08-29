@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { get_database } from '../../database';
-import { create_summary_table, create_usage_table } from '../../utils/charts';
+import { create_usage_table } from '../../utils/charts';
 
 interface HookPerformanceRow {
 	event_type: string;
@@ -43,12 +43,16 @@ export async function show_performance_analytics(days: number) {
 
 	if (hook_performance.length === 0) {
 		console.log(
-			chalk.yellow('\nNo hook performance data found for the specified period.'),
+			chalk.yellow(
+				'\nNo hook performance data found for the specified period.',
+			),
 		);
 		return;
 	}
 
-	console.log(chalk.blue.bold(`\nHook Performance (Last ${days} Days)\n`));
+	console.log(
+		chalk.blue.bold(`\nHook Performance (Last ${days} Days)\n`),
+	);
 
 	const table_data = hook_performance.map((hook) => [
 		hook.event_type,
@@ -68,7 +72,11 @@ export async function show_performance_analytics(days: number) {
 		(sum, h) => sum + h.total_time_spent,
 		0,
 	);
-	console.log(chalk.cyan(`\nTotal Hook Overhead: ${total_hook_time.toFixed(0)}ms`));
+	console.log(
+		chalk.cyan(
+			`\nTotal Hook Overhead: ${total_hook_time.toFixed(0)}ms`,
+		),
+	);
 }
 
 export async function show_tool_success_analytics(days: number) {
@@ -99,22 +107,28 @@ export async function show_tool_success_analytics(days: number) {
 
 	if (tool_success.length === 0) {
 		console.log(
-			chalk.yellow('\nNo tool success data found for the specified period.'),
+			chalk.yellow(
+				'\nNo tool success data found for the specified period.',
+			),
 		);
 		return;
 	}
 
-	console.log(chalk.blue.bold(`\nTool Success Rates (Last ${days} Days)\n`));
+	console.log(
+		chalk.blue.bold(`\nTool Success Rates (Last ${days} Days)\n`),
+	);
 
 	const table_data = tool_success.map((tool) => [
-		tool.tool_name.length > 20 
+		tool.tool_name.length > 20
 			? '...' + tool.tool_name.slice(-17)
 			: tool.tool_name,
 		tool.total_calls.toString(),
 		tool.successful.toString(),
 		tool.failed.toString(),
 		`${tool.success_rate}%`,
-		tool.avg_execution_time ? `${tool.avg_execution_time.toFixed(0)}ms` : 'N/A',
+		tool.avg_execution_time
+			? `${tool.avg_execution_time.toFixed(0)}ms`
+			: 'N/A',
 	]);
 
 	const table = create_usage_table(
@@ -123,9 +137,22 @@ export async function show_tool_success_analytics(days: number) {
 	);
 	console.log(table);
 
-	const total_failed = tool_success.reduce((sum, t) => sum + t.failed, 0);
-	const total_calls = tool_success.reduce((sum, t) => sum + t.total_calls, 0);
-	const overall_failure_rate = ((total_failed / total_calls) * 100).toFixed(1);
-	
-	console.log(chalk.yellow(`\nOverall Failure Rate: ${overall_failure_rate}% (${total_failed}/${total_calls})`));
+	const total_failed = tool_success.reduce(
+		(sum, t) => sum + t.failed,
+		0,
+	);
+	const total_calls = tool_success.reduce(
+		(sum, t) => sum + t.total_calls,
+		0,
+	);
+	const overall_failure_rate = (
+		(total_failed / total_calls) *
+		100
+	).toFixed(1);
+
+	console.log(
+		chalk.yellow(
+			`\nOverall Failure Rate: ${overall_failure_rate}% (${total_failed}/${total_calls})`,
+		),
+	);
 }
