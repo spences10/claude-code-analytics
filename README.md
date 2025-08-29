@@ -11,11 +11,13 @@ Code usage patterns over time.
 
 ### Core Features
 
-🔄 **Real-time Statusline Display**
+🔄 **Enhanced Real-time Statusline Display**
 
-- Cost tracking, duration, lines changed
-- Model info, session status, working directory
-- Configurable display options
+- Smart cost formatting with efficiency indicators (⭐ high, ⚠️ low)
+- Human-readable duration display (2m 30s vs 150000ms)
+- Git status with clean/dirty indicators (🌿 main ✓ vs 🌿 main ●)
+- Tool performance tracking with success rates (🔧 85% ✅)
+- Working directory context and lines changed metrics
 
 📊 **Data Collection & Analytics**
 
@@ -36,14 +38,22 @@ Code usage patterns over time.
 
 - Hook system capturing all Claude Code events
 - Comprehensive SQLite schema with incremental processing
-- 59 sessions, 3,732 messages, 1,427 tool calls collected
+- 77 sessions, 3,997 messages, 2,000+ tool calls collected
 - Silent operation (no user disruption)
 
-**🚧 Phase 2 In Progress: Reports & Analytics**
+**✅ Enhanced Statusline Complete**
 
-- CLI commands for data exploration
-- Console-based charts and graphs
-- Personal usage insights
+- Two-tier display system (basic + database-powered)
+- Productivity insights with efficiency rankings
+- Real-time tool performance indicators
+- Smart cost analysis with historical comparisons
+- Works independently with graceful fallbacks
+
+**🚧 Phase 2 In Progress: CLI Analytics & Reports**
+
+- Console-based analytics commands
+- Personal productivity insights dashboard
+- Advanced data visualization tools
 
 ## Quick Start
 
