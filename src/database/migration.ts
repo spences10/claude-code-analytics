@@ -29,24 +29,12 @@ export function ensure_schema_exists(db: Database.Database): boolean {
 }
 
 function initialize_database_schema(db: Database.Database): void {
-	// Try multiple possible paths for schema.sql
-	const possible_paths = [
-		path.join(__dirname, '../../docs/schema.sql'),
-		path.join(process.cwd(), 'docs/schema.sql'),
-		path.join(process.cwd(), 'src/../docs/schema.sql'),
-	];
+	// Load schema packaged alongside compiled code in dist/database/
+	const schema_path = path.join(__dirname, 'schema.sql');
 
-	let schema_path = '';
-	for (const candidate_path of possible_paths) {
-		if (fs.existsSync(candidate_path)) {
-			schema_path = candidate_path;
-			break;
-		}
-	}
-
-	if (!schema_path) {
+	if (!fs.existsSync(schema_path)) {
 		throw new Error(
-			`Schema file not found. Tried: ${possible_paths.join(', ')}`,
+			`Schema file not found at ${schema_path}. Ensure build copies schema.sql to dist/database/`,
 		);
 	}
 

@@ -7,7 +7,7 @@
 		"claude-code-analytics": "./dist/statusline.js"
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc && cp ./src/database/schema.sql ./dist/database/schema.sql",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"changeset": "changeset",
