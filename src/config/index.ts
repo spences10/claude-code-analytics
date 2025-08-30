@@ -14,6 +14,7 @@ interface StatuslineConfig {
 		show_model?: boolean;
 		show_session_status?: boolean;
 		show_working_directory?: boolean;
+		layout?: string[][];
 	};
 	thresholds?: {
 		cost_warning?: number;

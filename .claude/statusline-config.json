@@ -1,4 +1,23 @@
 {
 	"data_collection": true,
-	"performance_logging": true
+	"performance_logging": true,
+	"display": {
+		"layout": [
+			[
+				"git",
+				"model"
+			],
+			[
+				"cost",
+				"duration"
+			],
+			[
+				"lines_changed",
+				"tool_performance"
+			],
+			[
+				"working_directory"
+			]
+		]
+	}
 }

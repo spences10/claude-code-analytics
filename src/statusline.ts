@@ -3,6 +3,7 @@ import { run_cli } from './cli';
 import {
 	is_data_collection_enabled,
 	is_performance_logging_enabled,
+	load_config,
 } from './config';
 import {
 	insert_hook_event,
@@ -116,7 +117,18 @@ async function main() {
 
 		// Only output statusline when not running as a hook
 		if (!hook_event_type) {
-			console.log(parts.join(' | ') || '⚡ Claude Code');
+			if (parts.length > 0) {
+				// If using custom layout, parts are already formatted lines
+				// If using default, parts are segments that need joining
+				const config = load_config(data.workspace?.current_dir);
+				if (config.display?.layout) {
+					parts.forEach((line) => console.log(line));
+				} else {
+					console.log(parts.join(' | '));
+				}
+			} else {
+				console.log('⚡ Claude Code');
+			}
 		}
 	} catch (error) {
 		// Only output error fallback when not running as a hook
