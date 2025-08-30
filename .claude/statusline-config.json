@@ -1,8 +1,12 @@
 {
 	"data_collection": true,
 	"performance_logging": true,
+	"hook_logging": true,
 	"display": {
 		"layout": [
+			[
+				"working_directory"
+			],
 			[
 				"git",
 				"model"
@@ -14,9 +18,6 @@
 			[
 				"lines_changed",
 				"tool_performance"
-			],
-			[
-				"working_directory"
 			]
 		]
 	}

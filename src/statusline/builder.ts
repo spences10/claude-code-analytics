@@ -44,7 +44,10 @@ function build_segment(
 				: null;
 		}
 		case 'tool_performance': {
-			if (insights.tool_success_rate === undefined) return null;
+			if (insights.tool_success_rate === undefined) {
+				// Show warming up state for sessions without tool data yet
+				return `🔧 --`;
+			}
 
 			const success_rate = Math.round(insights.tool_success_rate);
 			let tool_indicator = `🔧 ${success_rate}%`;

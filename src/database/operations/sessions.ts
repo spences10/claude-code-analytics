@@ -52,12 +52,13 @@ export function insert_or_update_project(
 }
 
 export function insert_or_update_session(data: ClaudeCodeData): void {
-	if (!data.session_id || !data.cwd) return;
+	const working_dir = data.cwd || data.workspace?.current_dir;
+	if (!data.session_id || !working_dir) return;
 
 	with_database((db) => {
 		// Ensure project exists first
-		const project_name = path.basename(data.cwd!);
-		insert_or_update_project(data.cwd!, project_name);
+		const project_name = path.basename(working_dir);
+		insert_or_update_project(working_dir, project_name);
 
 		// Insert or update session
 		const stmt = db.prepare(`
@@ -85,7 +86,7 @@ export function insert_or_update_session(data: ClaudeCodeData): void {
 			Number(data.cost?.total_lines_removed || 0),
 			data.exceeds_200k_tokens ? 1 : 0,
 			String(data.sessionSource || data.session_source || ''),
-			data.cwd,
+			working_dir,
 		];
 
 		stmt.run(...params);
