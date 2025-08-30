@@ -13,8 +13,15 @@ events during Claude Code operation.
 ### Session Events
 
 - **`SessionStart`** - Session begins
-- **`SessionEnd`** - Session ends
+- **`SessionEnd`** - Session ends (mapped to `Stop` event)
 - **`UserPromptSubmit`** - User submits prompt
+
+### Additional Hook Events (Not Yet Implemented)
+
+- **`Notification`** - Tool permissions/idle periods
+- **`SubagentStop`** - When subagents complete
+- **`PreCompact`** - Before context compaction (critical for cache
+  analysis)
 
 ## Configuration Structure
 

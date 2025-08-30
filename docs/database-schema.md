@@ -20,7 +20,8 @@ updates.
 
 - `projects` - Workspace/directory tracking
 - `sessions` - Individual conversation instances
-- `messages` - Conversation turns (with content previews)
+- `messages` - Conversation turns (with content previews and **token
+  caching metrics**)
 - `tool_calls` - Tool execution tracking
 - `files` - File access patterns
 - `file_operations` - Individual file changes
@@ -49,6 +50,13 @@ WHERE session_id = ? AND completed_at IS NULL;
 SELECT DATE(started_at), SUM(total_cost_usd)
 FROM sessions WHERE project_id = ?
 GROUP BY DATE(started_at);
+
+-- Cache efficiency analysis
+SELECT
+  SUM(cache_read_input_tokens) as cache_reads,
+  SUM(cache_creation_input_tokens) as cache_creation,
+  (cache_reads / (cache_reads + cache_creation)) * 100 as efficiency
+FROM messages WHERE session_id = ? AND role = 'assistant';
 
 -- Most expensive tools
 SELECT tool_name, AVG(execution_time_ms), COUNT(*)

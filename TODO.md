@@ -20,6 +20,15 @@ a solid, modular data processing foundation.
   - [x] Hook input data via stdin (session_id, transcript_path, tool
         context)
   - [x] Command configuration in .claude/settings.json
+  - [ ] **Missing Hook Events** - Additional hooks from official docs
+    - [ ] Notification hooks (tool permissions/idle periods)
+    - [ ] SubagentStop hooks (subagent completion tracking)
+    - [ ] PreCompact hooks (context compaction analytics)
+  - [ ] **Security & Robustness** - Production-ready hook handling
+    - [ ] Input validation and sanitization
+    - [ ] 60-second timeout handling
+    - [ ] Path traversal protection
+    - [ ] Shell injection prevention
 
 ### Phase 1b: SQLite Data Architecture
 
@@ -122,6 +131,14 @@ working**
   - [x] Session efficiency ranking (⭐ high, ⚠️ low efficiency)
   - [x] Two-tier system: basic mode + database-enhanced mode
 
+- [x] **Token Caching Analytics** ✅ **NEW!**
+  - [x] Cache efficiency tracking with visual indicators (🚀 90%+, ⚡
+        70%+, 🐌 <50%)
+  - [x] Token savings display in K/M format (🏃‍♂️ 100% (77K) 🚀)
+  - [x] Database fields for all cache metrics (creation, read, 5m/1h
+        ephemeral)
+  - [x] Real-time cache performance in statusline
+
 ### Core CLI Analytics
 
 - [ ] **Session Analysis Commands**
@@ -129,12 +146,14 @@ working**
   - [ ] `summary` - Session cost and activity breakdown
   - [ ] `tools` - Tool usage statistics
   - [ ] `timeline` - Chronological activity view
+  - [ ] `cache` - Cache efficiency analysis and optimization tips
 
 - [ ] **Basic Reporting**
   - [ ] Daily/weekly cost summaries
   - [ ] Project activity reports
   - [ ] Simple productivity metrics
   - [ ] Export capabilities (JSON, CSV)
+  - [ ] Cache optimization recommendations
 
 ## Phase 3: Advanced SQL Analytics (Future)
 
@@ -156,6 +175,11 @@ working**
       hotspots
 - [ ] **Session optimization insights** - Identify unproductive
       patterns
+- [ ] **Context Compaction Analysis** - Track when/how context gets
+      compacted
+- [ ] **Subagent Performance** - Which subagents are most effective
+- [ ] **Cache Optimization** - Smart recommendations for better cache
+      usage
 
 ### Historical Data Mining
 
@@ -219,13 +243,15 @@ Project History
 - [x] Human-readable duration and directory context
 - [x] Perfect independence: statusline + hooks work separately
 
-**Data Collection Stats** (As of Aug 29, 2025):
+**Data Collection Stats** (As of Aug 30, 2025):
 
-- 77 Claude Code sessions tracked
-- 3,997 conversation messages captured
+- 77+ Claude Code sessions tracked
+- 4,000+ conversation messages captured with **token caching metrics**
 - 2,000+ tool calls with performance analytics
 - 4+ projects monitored, 60+ unique files accessed
 - 10+ MB SQLite database with rich productivity insights
+- **Token cache efficiency tracking**: 99.7% efficiency rates observed
+- **Cache savings**: 76K+ tokens saved in single sessions
 
 **PROJECT DIRECTION**: Enhanced Claude Code statusline + personal
 analytics CLI

@@ -17,18 +17,23 @@ Code usage patterns over time.
 - Human-readable duration display (2m 30s vs 150000ms)
 - Git status with clean/dirty indicators (🌿 main ✓ vs 🌿 main ●)
 - Tool performance tracking with success rates (🔧 85% ✅)
+- **Token cache efficiency tracking** with visual indicators (🚀 90%+,
+  ⚡ 70%+, 🐌 <50%)
+- **Cache savings display** in K/M format (🏃‍♂️ 100% (77K) 🚀)
 - Working directory context and lines changed metrics
 
 📊 **Data Collection & Analytics**
 
 - Every tool call, file operation, and session tracked
-- SQLite database with rich schema (9 tables)
+- **Token caching metrics** with cache read/creation analysis
+- SQLite database with rich schema (9 tables + cache fields)
 - Hook-driven collection with ~0.1ms performance impact
 
 📈 **Usage Analytics** _(Coming Soon)_
 
 - Console-based reports and visualizations
 - Personal productivity insights
+- **Cache optimization recommendations** and efficiency analysis
 - Cost optimization recommendations
 - Project comparison and trends
 
@@ -38,7 +43,8 @@ Code usage patterns over time.
 
 - Hook system capturing all Claude Code events
 - Comprehensive SQLite schema with incremental processing
-- 77 sessions, 3,997 messages, 2,000+ tool calls collected
+- **Token caching data extraction** from JSONL conversation files
+- 77+ sessions, 4,000+ messages, 2,000+ tool calls collected
 - Silent operation (no user disruption)
 
 **✅ Enhanced Statusline Complete**
@@ -46,6 +52,7 @@ Code usage patterns over time.
 - Two-tier display system (basic + database-powered)
 - Productivity insights with efficiency rankings
 - Real-time tool performance indicators
+- **Token cache efficiency tracking** with 99.7% rates observed
 - Smart cost analysis with historical comparisons
 - Works independently with graceful fallbacks
 
@@ -107,7 +114,8 @@ The system maintains a SQLite database at
 `~/.claude/claude-code-statusline.db` with:
 
 - **Sessions** - Every Claude Code session with timing, costs, metrics
-- **Messages** - Full conversation history with token usage
+- **Messages** - Full conversation history with **token caching
+  analytics**
 - **Tool Calls** - Every tool execution with success/failure tracking
 - **Files** - File access patterns and modification history
 - **Projects** - Cross-project analytics and comparisons
@@ -166,11 +174,14 @@ node dist/statusline.js --process-transcripts
 
 - [ ] Console-based charts and graphs
 - [ ] Personal productivity analytics
+- [ ] **Cache optimization insights** and efficiency recommendations
 - [ ] Cost optimization insights
 - [ ] Project comparison reports
 - [ ] Export capabilities (CSV, JSON)
 - [ ] Advanced session analysis
 - [ ] Trend forecasting
+- [ ] Additional hook events (Notification, SubagentStop, PreCompact)
+- [ ] Enhanced security and input validation
 
 ---
 
