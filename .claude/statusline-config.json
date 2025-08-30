@@ -9,7 +9,8 @@
 			],
 			[
 				"git",
-				"model"
+				"model",
+				"cache_efficiency"
 			],
 			[
 				"cost",

@@ -6,6 +6,8 @@ export interface productivity_insights {
 	average_session_cost?: number;
 	session_rank?: 'high' | 'normal' | 'low';
 	tool_success_rate?: number;
+	cache_efficiency?: number;
+	cache_savings_tokens?: number;
 }
 
 export function get_productivity_insights(
@@ -87,11 +89,41 @@ export function get_productivity_insights(
 				? (tool_stats.successful_tools / tool_stats.total_tools) * 100
 				: undefined;
 
+		// Calculate cache efficiency for current session
+		const cache_stats = db
+			.prepare(
+				`
+			SELECT 
+				SUM(cache_read_input_tokens) as total_cache_reads,
+				SUM(cache_creation_input_tokens) as total_cache_creation,
+				SUM(token_count_input) as total_input_tokens
+			FROM messages 
+			WHERE session_id = ? AND role = 'assistant'
+		`,
+			)
+			.get(session_id) as any;
+
+		let cache_efficiency: number | undefined;
+		let cache_savings_tokens: number | undefined;
+
+		if (cache_stats?.total_cache_reads > 0) {
+			const total_cache_tokens =
+				(cache_stats.total_cache_reads || 0) +
+				(cache_stats.total_cache_creation || 0);
+			cache_efficiency =
+				total_cache_tokens > 0
+					? (cache_stats.total_cache_reads / total_cache_tokens) * 100
+					: undefined;
+			cache_savings_tokens = cache_stats.total_cache_reads;
+		}
+
 		return {
 			current_session_efficiency: current_efficiency,
 			average_session_cost: avg_metrics?.avg_cost,
 			session_rank,
 			tool_success_rate,
+			cache_efficiency,
+			cache_savings_tokens,
 		};
 	} catch {
 		return {};

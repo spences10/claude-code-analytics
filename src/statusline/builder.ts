@@ -62,6 +62,34 @@ function build_segment(
 				data.workspace.current_dir.split('/').pop() || '';
 			return dir_name && dir_name !== '.' ? `📁 ${dir_name}` : null;
 		}
+		case 'cache_efficiency': {
+			if (insights.cache_efficiency === undefined) return null;
+
+			const efficiency = Math.round(insights.cache_efficiency);
+			const savings = insights.cache_savings_tokens || 0;
+
+			// Format large numbers
+			let savings_display = '';
+			if (savings >= 1000000) {
+				savings_display = `${Math.round(savings / 1000000)}M`;
+			} else if (savings >= 1000) {
+				savings_display = `${Math.round(savings / 1000)}K`;
+			} else {
+				savings_display = savings.toString();
+			}
+
+			let cache_indicator = `🏃‍♂️ ${efficiency}% (${savings_display})`;
+
+			if (efficiency >= 90) {
+				cache_indicator += ' 🚀';
+			} else if (efficiency >= 70) {
+				cache_indicator += ' ⚡';
+			} else if (efficiency < 50) {
+				cache_indicator += ' 🐌';
+			}
+
+			return cache_indicator;
+		}
 		default:
 			return null;
 	}
@@ -103,6 +131,7 @@ export function build_statusline_parts(
 		'duration',
 		'lines_changed',
 		'tool_performance',
+		'cache_efficiency',
 		'working_directory',
 	];
 

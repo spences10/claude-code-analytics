@@ -28,6 +28,16 @@ interface ConversationMessage {
 					input?: any;
 					content?: any;
 			  }>;
+		usage?: {
+			input_tokens?: number;
+			output_tokens?: number;
+			cache_creation_input_tokens?: number;
+			cache_read_input_tokens?: number;
+			cache_creation?: {
+				ephemeral_5m_input_tokens?: number;
+				ephemeral_1h_input_tokens?: number;
+			};
+		};
 	};
 	content?: string;
 	uuid: string;
@@ -206,15 +216,32 @@ async function process_single_message(
 
 	const role = message.type === 'system' ? 'system' : message.type;
 
+	// Extract token usage data from assistant messages
+	const usage = message.message?.usage;
+	const token_count_input = usage?.input_tokens;
+	const token_count_output = usage?.output_tokens;
+	const cache_creation_input_tokens =
+		usage?.cache_creation_input_tokens;
+	const cache_read_input_tokens = usage?.cache_read_input_tokens;
+	const cache_5m_tokens =
+		usage?.cache_creation?.ephemeral_5m_input_tokens;
+	const cache_1h_tokens =
+		usage?.cache_creation?.ephemeral_1h_input_tokens;
+
 	record_message(
 		session_id,
 		message_index,
 		role,
 		content_preview,
-		undefined,
-		undefined,
-		undefined,
+		token_count_input,
+		token_count_output,
+		undefined, // cost_usd - may be calculated elsewhere
 		has_tool_calls,
+		cache_creation_input_tokens,
+		cache_read_input_tokens,
+		cache_5m_tokens,
+		cache_1h_tokens,
+		message.timestamp,
 	);
 }
 

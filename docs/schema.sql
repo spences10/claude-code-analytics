@@ -47,6 +47,10 @@ CREATE TABLE messages (
     token_count_output INTEGER,
     cost_usd DECIMAL(10,6),
     has_tool_calls BOOLEAN DEFAULT FALSE,
+    cache_creation_input_tokens INTEGER, -- Tokens added to cache
+    cache_read_input_tokens INTEGER, -- Tokens read from cache (savings!)
+    cache_5m_tokens INTEGER, -- 5-minute ephemeral cache tokens
+    cache_1h_tokens INTEGER, -- 1-hour ephemeral cache tokens
     FOREIGN KEY (session_id) REFERENCES sessions(session_id),
     UNIQUE(session_id, message_index)
 );
@@ -127,6 +131,7 @@ CREATE TABLE schema_version (
 CREATE INDEX idx_sessions_project_active ON sessions(project_id, last_active_at DESC);
 CREATE INDEX idx_sessions_cost ON sessions(total_cost_usd DESC);
 CREATE INDEX idx_messages_session ON messages(session_id, message_index);
+CREATE INDEX idx_messages_cache_efficiency ON messages(cache_read_input_tokens, cache_creation_input_tokens);
 CREATE INDEX idx_tool_calls_session_time ON tool_calls(session_id, started_at);
 CREATE INDEX idx_files_project_active ON files(project_id, last_accessed_at DESC);
 CREATE INDEX idx_hook_events_session_type ON hook_events(session_id, event_type);
