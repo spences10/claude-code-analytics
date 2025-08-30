@@ -64,7 +64,7 @@ function get_hook_config(): ClaudeSettings {
 	return {
 		statusLine: {
 			type: 'command',
-			command: 'claude-code-statusline',
+			command: 'claude-code-analytics',
 		},
 		hooks: {
 			SessionStart: [
@@ -72,7 +72,7 @@ function get_hook_config(): ClaudeSettings {
 					hooks: [
 						{
 							type: 'command',
-							command: 'claude-code-statusline session_start',
+							command: 'claude-code-analytics session_start',
 							timeout: 3000,
 						},
 					],
@@ -83,7 +83,7 @@ function get_hook_config(): ClaudeSettings {
 					hooks: [
 						{
 							type: 'command',
-							command: 'claude-code-statusline session_end',
+							command: 'claude-code-analytics session_end',
 							timeout: 3000,
 						},
 					],
@@ -94,7 +94,7 @@ function get_hook_config(): ClaudeSettings {
 					hooks: [
 						{
 							type: 'command',
-							command: 'claude-code-statusline pre_tool_use',
+							command: 'claude-code-analytics pre_tool_use',
 							timeout: 3000,
 						},
 					],
@@ -105,7 +105,7 @@ function get_hook_config(): ClaudeSettings {
 					hooks: [
 						{
 							type: 'command',
-							command: 'claude-code-statusline post_tool_use',
+							command: 'claude-code-analytics post_tool_use',
 							timeout: 3000,
 						},
 					],
@@ -116,7 +116,7 @@ function get_hook_config(): ClaudeSettings {
 					hooks: [
 						{
 							type: 'command',
-							command: 'claude-code-statusline user_prompt_submit',
+							command: 'claude-code-analytics user_prompt_submit',
 							timeout: 3000,
 						},
 					],
@@ -127,7 +127,7 @@ function get_hook_config(): ClaudeSettings {
 					hooks: [
 						{
 							type: 'command',
-							command: 'claude-code-statusline session_stop',
+							command: 'claude-code-analytics session_stop',
 							timeout: 5000,
 						},
 					],
@@ -212,7 +212,8 @@ function remove_our_hooks_only(
 							return !group.hooks.some(
 								(hook: any) =>
 									hook.command &&
-									(hook.command.includes('claude-code-statusline') ||
+									(hook.command.includes('claude-code-analytics') ||
+										hook.command.includes('claude-code-statusline') ||
 										hook.command.includes('statusline.js')),
 							);
 						}
@@ -258,10 +259,16 @@ export async function install_claude_integration(
 	// Check what's already installed (both new and old command formats)
 	const has_statusline =
 		existing_settings.statusLine?.command?.includes(
+			'claude-code-analytics',
+		) ||
+		existing_settings.statusLine?.command?.includes(
 			'claude-code-statusline',
 		) ||
 		existing_settings.statusLine?.command?.includes('statusline.js');
 	const has_hooks =
+		existing_settings.hooks?.SessionStart?.[0]?.hooks?.[0]?.command?.includes(
+			'claude-code-analytics',
+		) ||
 		existing_settings.hooks?.SessionStart?.[0]?.hooks?.[0]?.command?.includes(
 			'claude-code-statusline',
 		) ||
@@ -302,7 +309,7 @@ export async function install_claude_integration(
 		if (will_install_statusline) {
 			merged_settings.statusLine = {
 				type: 'command',
-				command: 'claude-code-statusline',
+				command: 'claude-code-analytics',
 			};
 		}
 
@@ -343,10 +350,16 @@ export async function uninstall_claude_integration(
 
 	const has_statusline =
 		existing_settings.statusLine?.command?.includes(
+			'claude-code-analytics',
+		) ||
+		existing_settings.statusLine?.command?.includes(
 			'claude-code-statusline',
 		) ||
 		existing_settings.statusLine?.command?.includes('statusline.js');
 	const has_hooks =
+		existing_settings.hooks?.SessionStart?.[0]?.hooks?.[0]?.command?.includes(
+			'claude-code-analytics',
+		) ||
 		existing_settings.hooks?.SessionStart?.[0]?.hooks?.[0]?.command?.includes(
 			'claude-code-statusline',
 		) ||

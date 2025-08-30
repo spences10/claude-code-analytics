@@ -1,10 +1,10 @@
 {
-	"name": "claude-code-statusline",
+	"name": "claude-code-analytics",
 	"version": "0.0.0",
-	"description": "CLI tool for Claude Code statusline integration",
+	"description": "CLI tool for Claude Code analytics and statusline integration",
 	"main": "dist/statusline.js",
 	"bin": {
-		"claude-code-statusline": "./dist/statusline.js"
+		"claude-code-analytics": "./dist/statusline.js"
 	},
 	"scripts": {
 		"build": "tsc",

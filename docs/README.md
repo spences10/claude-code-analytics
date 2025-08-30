@@ -1,4 +1,4 @@
-# Claude Code Integration Data Sources
+# Claude Code Analytics Data Sources
 
 This documentation maps all available data sources and integration
 points within Claude Code, providing comprehensive reference for

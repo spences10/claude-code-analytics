@@ -1,13 +1,13 @@
 # CLI Configuration Reference
 
 Interactive configuration setup using @clack/prompts for
-claude-code-statusline.
+claude-code-analytics.
 
 ## Quick Start
 
 ```bash
 # Run interactive configuration setup
-claude-code-statusline --config
+claude-code-analytics --config
 ```
 
 ## CLI Features
@@ -22,7 +22,7 @@ claude-code-statusline --config
 
 ```bash
 # Used by Claude Code automatically
-claude-code-statusline < data.json
+claude-code-analytics < data.json
 ```
 
 Returns formatted statusline output for terminal display.
@@ -31,7 +31,7 @@ Returns formatted statusline output for terminal display.
 
 ```bash
 # Interactive setup
-claude-code-statusline --config
+claude-code-analytics --config
 ```
 
 Launches interactive prompts for configuration management.
@@ -90,8 +90,8 @@ optimizing hook execution
 - **Entry Point Detection**: `--config` flag routes to CLI mode
 - **Performance**: Fast statusline path remains separate for 300ms
   updates
-- **Configuration Storage**: `~/.claude/statusline-config.json`
-  (global) or `.claude/statusline-config.json` (project)
+- **Configuration Storage**: `~/.claude/claude-code-analytics.json`
+  (global) or `.claude/claude-code-analytics.json` (project)
 
 ## See Also
 

@@ -29,12 +29,12 @@ interface StatuslineConfig {
 const global_config_dir = path.join(os.homedir(), '.claude');
 const global_config_file = path.join(
 	global_config_dir,
-	'statusline-config.json',
+	'claude-code-analytics.json',
 );
 
 function get_project_config_path(project_dir?: string): string {
 	const base_dir = project_dir || process.cwd();
-	return path.join(base_dir, '.claude', 'statusline-config.json');
+	return path.join(base_dir, '.claude', 'claude-code-analytics.json');
 }
 
 function deep_merge(target: any, source: any): any {

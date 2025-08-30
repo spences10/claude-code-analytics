@@ -10,7 +10,7 @@ export function get_db_path(): string {
 	// Ensure the directory exists
 	fs.mkdirSync(claude_dir, { recursive: true });
 
-	return path.join(claude_dir, 'claude-code-statusline.db');
+	return path.join(claude_dir, 'claude-code-analytics.db');
 }
 
 export function get_database(): Database.Database {

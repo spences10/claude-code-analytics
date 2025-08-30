@@ -9,7 +9,7 @@ Unbreakable rules:
 At the start of every session, load up on context from @docs/README.md
 and @TODO.md
 
-Database path is `~/.claude/claude-code-statusline.db` there is no
+Database path is `~/.claude/claude-code-analytics.db` there is no
 database in the root of this project.
 
 <!-- https://www.reddit.com/r/ChatGPTCoding/comments/1lm3fxq/gemini_cli_is_awesome_but_only_when_you_make/ -->

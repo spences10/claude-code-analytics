@@ -69,7 +69,7 @@ Code usage patterns over time.
 ```bash
 # Clone and build
 git clone <repo>
-cd claude-code-statusline
+cd claude-code-analytics
 pnpm install && pnpm build
 
 # Configure Claude Code statusline
@@ -96,22 +96,22 @@ in the background.
 
 ```bash
 # Session summaries
-claude-analytics summary
+claude-code-analytics summary
 
 # Cost breakdowns
-claude-analytics costs --last-week
+claude-code-analytics costs --last-week
 
 # Tool usage stats
-claude-analytics tools --top-10
+claude-code-analytics tools --top-10
 
 # Project insights
-claude-analytics projects
+claude-code-analytics projects
 ```
 
 ## Database Schema
 
 The system maintains a SQLite database at
-`~/.claude/claude-code-statusline.db` with:
+`~/.claude/claude-code-analytics.db` with:
 
 - **Sessions** - Every Claude Code session with timing, costs, metrics
 - **Messages** - Full conversation history with **token caching
@@ -124,7 +124,7 @@ The system maintains a SQLite database at
 ## Configuration
 
 ```json
-// ~/.claude/statusline-config.json
+// ~/.claude/claude-code-analytics.json
 {
 	"data_collection": true,
 	"hook_logging": false,
@@ -153,7 +153,7 @@ Claude Code Session
 
 ## Data Privacy
 
-- All data stored locally in `~/.claude/claude-code-statusline.db`
+- All data stored locally in `~/.claude/claude-code-analytics.db`
 - No external data transmission
 - Configurable data collection controls
 - Hook operations run silently by default
