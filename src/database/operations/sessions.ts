@@ -60,9 +60,9 @@ export function insert_or_update_session(data: ClaudeCodeData): void {
 		const project_name = path.basename(working_dir);
 		insert_or_update_project(working_dir, project_name);
 
-		// Insert or update session
-		const stmt = db.prepare(`
-			INSERT OR REPLACE INTO sessions (
+		// First, try to insert new session (preserves started_at)
+		const insert_stmt = db.prepare(`
+			INSERT OR IGNORE INTO sessions (
 				session_id, project_id, transcript_path, model_id, model_display_name,
 				claude_version, started_at, last_active_at, total_cost_usd,
 				total_api_duration_ms, total_lines_added, total_lines_removed,
@@ -72,14 +72,15 @@ export function insert_or_update_session(data: ClaudeCodeData): void {
 			FROM projects p WHERE p.project_path = ?
 		`);
 
-		const params = [
+		const now = new Date().toISOString();
+		const insert_params = [
 			data.session_id,
 			data.transcript_path || '',
 			data.model?.id || '',
 			data.model?.display_name || '',
 			data.version || '',
-			new Date().toISOString(),
-			new Date().toISOString(),
+			now, // started_at only set on first insert
+			now, // last_active_at
 			Number(data.cost?.total_cost_usd || 0),
 			Number(data.cost?.total_api_duration_ms || 0),
 			Number(data.cost?.total_lines_added || 0),
@@ -90,7 +91,43 @@ export function insert_or_update_session(data: ClaudeCodeData): void {
 			working_dir,
 		];
 
-		stmt.run(...params);
+		insert_stmt.run(...insert_params);
+
+		// Then update changeable fields (preserves started_at and other stable fields)
+		const update_stmt = db.prepare(`
+			UPDATE sessions 
+			SET transcript_path = ?,
+				model_id = ?,
+				model_display_name = ?,
+				claude_version = ?,
+				last_active_at = ?,
+				total_cost_usd = ?,
+				total_api_duration_ms = ?,
+				total_lines_added = ?,
+				total_lines_removed = ?,
+				exceeds_200k_tokens = ?,
+				session_source = ?,
+				output_style_name = ?
+			WHERE session_id = ?
+		`);
+
+		const update_params = [
+			data.transcript_path || '',
+			data.model?.id || '',
+			data.model?.display_name || '',
+			data.version || '',
+			now, // Update last_active_at
+			Number(data.cost?.total_cost_usd || 0),
+			Number(data.cost?.total_api_duration_ms || 0),
+			Number(data.cost?.total_lines_added || 0),
+			Number(data.cost?.total_lines_removed || 0),
+			data.exceeds_200k_tokens ? 1 : 0,
+			String(data.sessionSource || data.session_source || ''),
+			data.output_style?.name || '',
+			data.session_id,
+		];
+
+		update_stmt.run(...update_params);
 	}, 'insert/update session');
 }
 

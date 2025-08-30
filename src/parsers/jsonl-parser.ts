@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import readline from 'node:readline';
+import { get_database } from '../database/connection';
 import { record_file_operation } from '../database/operations/files';
 import { record_message } from '../database/operations/messages';
 import {
@@ -46,6 +47,23 @@ interface ConversationMessage {
 
 const BATCH_SIZE = 100;
 
+function get_next_message_index(session_id: string): number {
+	const db = get_database();
+	const stmt = db.prepare(
+		'SELECT COALESCE(MAX(message_index), -1) + 1 as next_index FROM messages WHERE session_id = ?',
+	);
+	const result = stmt.get(session_id) as { next_index: number };
+	return result.next_index;
+}
+
+function clear_session_messages(session_id: string): void {
+	const db = get_database();
+	const stmt = db.prepare(
+		'DELETE FROM messages WHERE session_id = ?',
+	);
+	stmt.run(session_id);
+}
+
 export async function process_jsonl_transcript(
 	transcript_path: string,
 	session_id: string,
@@ -68,6 +86,11 @@ export async function process_jsonl_transcript(
 			? 0
 			: position_record.last_processed_position;
 
+		// If force reprocessing, clear existing messages for this session
+		if (force_reprocess) {
+			clear_session_messages(session_id);
+		}
+
 		update_processing_status(transcript_path, 'processing');
 
 		const file_stats = fs.statSync(transcript_path);
@@ -79,7 +102,9 @@ export async function process_jsonl_transcript(
 		let current_position = start_position;
 		let processed_count = 0;
 		let message_index = 0;
-		let conversation_message_index = 0;
+		let conversation_message_index = force_reprocess
+			? 0
+			: get_next_message_index(session_id);
 
 		const file_stream = fs.createReadStream(transcript_path, {
 			start: start_position,

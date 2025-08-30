@@ -1,13 +1,16 @@
 import Database from 'better-sqlite3';
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { ensure_schema_exists } from './migration';
 
 export function get_db_path(): string {
-	return path.join(
-		process.env.HOME || '',
-		'.claude',
-		'claude-code-statusline.db',
-	);
+	const claude_dir = path.join(os.homedir(), '.claude');
+
+	// Ensure the directory exists
+	fs.mkdirSync(claude_dir, { recursive: true });
+
+	return path.join(claude_dir, 'claude-code-statusline.db');
 }
 
 export function get_database(): Database.Database {
