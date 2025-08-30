@@ -32,6 +32,7 @@ CREATE TABLE sessions (
     exceeds_200k_tokens BOOLEAN DEFAULT FALSE,
     session_source TEXT,
     end_reason TEXT,
+    output_style_name TEXT,
     FOREIGN KEY (project_id) REFERENCES projects(project_id)
 );
 

@@ -17,6 +17,8 @@ import {
 } from './parsers/jsonl-parser';
 import { build_statusline_parts } from './statusline/builder';
 
+const OUTPUT_CLAUDE_CODE_DATA = false;
+
 async function main() {
 	const start_time = performance.now();
 
@@ -81,6 +83,19 @@ async function main() {
 
 		const data: ClaudeCodeData = JSON.parse(input);
 		const execution_time = performance.now() - start_time;
+
+		// Temporary: Log statusline data to see what we're missing
+		if (!hook_event_type && OUTPUT_CLAUDE_CODE_DATA) {
+			const log_data = {
+				timestamp: new Date().toISOString(),
+				data: data,
+				argv: process.argv,
+			};
+			fs.appendFileSync(
+				'statusline-data-log.json',
+				JSON.stringify(log_data, null, 2) + '\n---\n',
+			);
+		}
 
 		// Cache rich statusline data for hooks to use
 		if (

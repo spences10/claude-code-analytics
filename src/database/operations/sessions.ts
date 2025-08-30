@@ -66,9 +66,9 @@ export function insert_or_update_session(data: ClaudeCodeData): void {
 				session_id, project_id, transcript_path, model_id, model_display_name,
 				claude_version, started_at, last_active_at, total_cost_usd,
 				total_api_duration_ms, total_lines_added, total_lines_removed,
-				exceeds_200k_tokens, session_source
+				exceeds_200k_tokens, session_source, output_style_name
 			)
-			SELECT ?, p.project_id, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+			SELECT ?, p.project_id, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 			FROM projects p WHERE p.project_path = ?
 		`);
 
@@ -86,6 +86,7 @@ export function insert_or_update_session(data: ClaudeCodeData): void {
 			Number(data.cost?.total_lines_removed || 0),
 			data.exceeds_200k_tokens ? 1 : 0,
 			String(data.sessionSource || data.session_source || ''),
+			data.output_style?.name || '',
 			working_dir,
 		];
 
