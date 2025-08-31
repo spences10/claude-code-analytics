@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-interface StatuslineConfig {
+export interface StatuslineConfig {
 	name?: string;
 	data_collection?: boolean;
 	performance_logging?: boolean;
@@ -14,6 +14,10 @@ interface StatuslineConfig {
 		show_model?: boolean;
 		show_session_status?: boolean;
 		show_working_directory?: boolean;
+		icons?: boolean;
+		powerline?: boolean;
+		icon_overrides?: Record<string, string>;
+		theme?: 'minimal' | 'ascii' | 'emoji';
 		layout?: string[][];
 	};
 	thresholds?: {
@@ -114,6 +118,8 @@ export function get_default_config(): StatuslineConfig {
 			show_model: true,
 			show_session_status: true,
 			show_working_directory: false,
+			icons: true,
+			theme: 'minimal',
 		},
 		thresholds: {
 			cost_warning: 1.0,
