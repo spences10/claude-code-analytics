@@ -18,7 +18,15 @@ export interface StatuslineConfig {
 		powerline?: boolean;
 		icon_overrides?: Record<string, string>;
 		theme?: 'minimal' | 'ascii' | 'emoji';
+		colors?: boolean;
+		bar_width?: number;
+		sparkline?: {
+			width?: number;
+			height?: number;
+			points?: number;
+		};
 		layout?: string[][];
+		verbose?: boolean;
 	};
 	thresholds?: {
 		cost_warning?: number;

@@ -2,6 +2,15 @@
 	"data_collection": true,
 	"performance_logging": true,
 	"hook_logging": true,
+	"theme": "minimal",
+	"verbose": false,
+	"colors": true,
+	"bar_width": 12,
+	"sparkline": {
+		"width": 20,
+		"height": 2,
+		"points": 20
+	},
 	"display": {
 		"layout": [
 			[
@@ -19,6 +28,16 @@
 			[
 				"lines_changed",
 				"tool_performance"
+			],
+			[
+				"tool_gauge",
+				"cache_gauge"
+			],
+			[
+				"lines_bar"
+			],
+			[
+				"cost_sparkline"
 			]
 		]
 	}
