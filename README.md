@@ -165,3 +165,82 @@ Example:
 	}
 }
 ```
+
+## Theming & Display
+
+You can customize the statusline’s look globally or per‑project.
+
+- Config files:
+  - Global: `~/.claude/claude-code-analytics.json`
+  - Project: `<project>/.claude/claude-code-analytics.json` (overrides
+    global)
+
+Display keys
+
+- `display.theme`: `minimal` (default), `ascii`, or `emoji`
+- `display.icons`: enable/disable icons globally (default: true)
+- `display.powerline`: boolean (auto‑detect when omitted)
+- `display.icon_overrides`: map of symbol name → string
+- `display.layout`: string[][] to control segment order and lines
+
+Examples
+
+Minimal (default) with Powerline forced:
+
+```json
+{
+	"display": {
+		"theme": "minimal",
+		"powerline": true
+	}
+}
+```
+
+Pure ASCII:
+
+```json
+{
+	"display": {
+		"theme": "ascii",
+		"icons": true
+	}
+}
+```
+
+Emoji (opt‑in) with simple overrides:
+
+```json
+{
+	"display": {
+		"theme": "emoji",
+		"icon_overrides": {
+			"branch": " ",
+			"ahead": "↑",
+			"behind": "↓"
+		}
+	}
+}
+```
+
+Notes
+
+- No environment variables are used for theming. Configure via JSON
+  only.
+- Project config deep‑merges over global config.
+
+## Terminal Visuals
+
+The CLI uses color and layout for readability without relying on heavy
+emoji.
+
+- `chalk` for subtle, meaningful color (headings, axes, legends)
+- `cli-table3` for clean, aligned tables
+- `asciichart` for compact line charts with scaled y‑axis labels
+- Powerline glyphs when the terminal supports them (auto‑detected)
+
+Upcoming improvements
+
+- Color cues for session rank, cache efficiency, and tool success
+- Theme presets that bundle layout + color choices (e.g., Minimal,
+  Dense)
+- Optional ASCII‑only mode across all views for maximal portability
