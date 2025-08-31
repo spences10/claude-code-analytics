@@ -274,12 +274,14 @@ async function process_single_message(
 function get_operation_type(
 	tool_name: string,
 ): 'read' | 'write' | 'edit' | null {
-	const tool_lower = tool_name.toLowerCase();
-	if (tool_lower === 'read') return 'read';
-	if (tool_lower === 'write') return 'write';
-	if (tool_lower === 'edit' || tool_lower === 'multiedit')
-		return 'edit';
-	return null;
+	const map: Record<string, 'read' | 'write' | 'edit'> = {
+		read: 'read',
+		write: 'write',
+		edit: 'edit',
+		multiedit: 'edit',
+	};
+	const key = tool_name.toLowerCase();
+	return map[key] ?? null;
 }
 
 export async function process_all_pending_transcripts(): Promise<void> {

@@ -20,73 +20,96 @@ import {
 	show_error_analysis,
 	show_session_quality_analytics,
 } from '../analytics/quality';
+import { show_quick_stats } from '../analytics/summary';
+
+type AnalyticsHandler = (days: number) => Promise<void>;
+
+const ANALYTICS: Record<
+	string,
+	{ label: string; hint?: string; run: AnalyticsHandler }
+> = {
+	costs: {
+		label: 'Cost Analytics',
+		hint: 'Daily spend trends with ASCII line charts',
+		run: show_costs_analytics,
+	},
+	tools: {
+		label: 'Tool Usage',
+		hint: 'Tool usage statistics with clean tables',
+		run: show_tools_analytics,
+	},
+	activity: {
+		label: 'Activity Patterns',
+		hint: 'Activity heatmap with ASCII blocks',
+		run: show_activity_analytics,
+	},
+	productivity: {
+		label: 'Productivity Metrics',
+		hint: 'Lines changed per session/dollar efficiency',
+		run: show_productivity_analytics,
+	},
+	projects: {
+		label: 'Project Intelligence',
+		hint: 'Cross-project comparison and insights',
+		run: show_projects_analytics,
+	},
+	files: {
+		label: 'File Operations',
+		hint: 'Most modified files and access patterns',
+		run: show_files_analytics,
+	},
+	models: {
+		label: 'Model Performance',
+		hint: 'Model efficiency and cost comparison',
+		run: show_models_analytics,
+	},
+	performance: {
+		label: 'Hook Performance',
+		hint: 'Hook execution times and overhead analysis',
+		run: show_performance_analytics,
+	},
+	success: {
+		label: 'Tool Success Rates',
+		hint: 'Tool reliability and failure analysis',
+		run: show_tool_success_analytics,
+	},
+	quality: {
+		label: 'Session Quality',
+		hint: 'Session metrics and end reasons',
+		run: show_session_quality_analytics,
+	},
+	errors: {
+		label: 'Error Analysis',
+		hint: 'Common errors and troubleshooting insights',
+		run: show_error_analysis,
+	},
+	quick: {
+		label: 'Quick Stats',
+		hint: '7-day summary at a glance',
+		run: async (days: number) => {
+			// ignore days parameter; quick stats shows last 7 days by default
+			await show_quick_stats();
+		},
+	},
+};
 export { show_quick_stats } from '../analytics/summary';
 
 export async function run_analytics_dashboard() {
 	while (true) {
+		const options = [
+			...Object.entries(ANALYTICS).map(
+				([value, { label, hint }]) => ({
+					value,
+					label,
+					hint,
+				}),
+			),
+			{ value: 'back', label: 'Back to Main Menu' },
+		];
+
 		const analytics_choice = await select({
 			message: 'Choose analytics to view:',
-			options: [
-				{
-					value: 'costs',
-					label: 'Cost Analytics',
-					hint: 'Daily spend trends with ASCII line charts',
-				},
-				{
-					value: 'tools',
-					label: 'Tool Usage',
-					hint: 'Tool usage statistics with clean tables',
-				},
-				{
-					value: 'activity',
-					label: 'Activity Patterns',
-					hint: 'Activity heatmap with ASCII blocks',
-				},
-				{
-					value: 'productivity',
-					label: 'Productivity Metrics',
-					hint: 'Lines changed per session/dollar efficiency',
-				},
-				{
-					value: 'projects',
-					label: 'Project Intelligence',
-					hint: 'Cross-project comparison and insights',
-				},
-				{
-					value: 'files',
-					label: 'File Operations',
-					hint: 'Most modified files and access patterns',
-				},
-				{
-					value: 'models',
-					label: 'Model Performance',
-					hint: 'Model efficiency and cost comparison',
-				},
-				{
-					value: 'performance',
-					label: 'Hook Performance',
-					hint: 'Hook execution times and overhead analysis',
-				},
-				{
-					value: 'success',
-					label: 'Tool Success Rates',
-					hint: 'Tool reliability and failure analysis',
-				},
-				{
-					value: 'quality',
-					label: 'Session Quality',
-					hint: 'Session metrics and end reasons',
-				},
-				{
-					value: 'errors',
-					label: 'Error Analysis',
-					hint: 'Common errors and troubleshooting insights',
-				},
-				{
-					value: 'back',
-					label: 'Back to Main Menu',
-				},
-			],
+			options,
 		});
 
 		if (isCancel(analytics_choice) || analytics_choice === 'back') {
@@ -110,44 +133,13 @@ export async function run_analytics_dashboard() {
 		const day_count = parseInt(days as string);
 
 		try {
-			switch (analytics_choice) {
-				case 'costs':
-					await show_costs_analytics(day_count);
-					break;
-				case 'tools':
-					await show_tools_analytics(day_count);
-					break;
-				case 'activity':
-					await show_activity_analytics(day_count);
-					break;
-				case 'productivity':
-					await show_productivity_analytics(day_count);
-					break;
-				case 'projects':
-					await show_projects_analytics(day_count);
-					break;
-				case 'files':
-					await show_files_analytics(day_count);
-					break;
-				case 'models':
-					await show_models_analytics(day_count);
-					break;
-				case 'performance':
-					await show_performance_analytics(day_count);
-					break;
-				case 'success':
-					await show_tool_success_analytics(day_count);
-					break;
-				case 'quality':
-					await show_session_quality_analytics(day_count);
-					break;
-				case 'errors':
-					await show_error_analysis(day_count);
-					break;
-				default:
-					console.log(
-						chalk.red('Unknown analytics option:', analytics_choice),
-					);
+			const handler = ANALYTICS[String(analytics_choice)]?.run;
+			if (handler) {
+				await handler(day_count);
+			} else {
+				console.log(
+					chalk.red('Unknown analytics option:', analytics_choice),
+				);
 			}
 		} catch (error) {
 			console.error(chalk.red('Error running analytics:'), error);

@@ -52,27 +52,59 @@ function print_version(): void {
 export async function handle_cli(argv: string[]): Promise<boolean> {
 	if (!argv || argv.length === 0) return false;
 
-	const [cmd, ...rest] = argv;
+	type CommandHandler = (args: string[]) => Promise<boolean>;
 
-	switch (cmd) {
-		case 'help':
-		case '-h':
-		case '--help':
+	const TRANSCRIPTS: Record<string, CommandHandler> = {
+		'process-all': async () => {
+			console.log('Processing all pending JSONL transcripts...');
+			await process_all_pending_transcripts();
+			console.log('Transcript processing completed.');
+			return true;
+		},
+		'process-one': async ([transcript_path, session_id]) => {
+			if (!transcript_path || !session_id) {
+				console.error(
+					'Usage: transcripts process-one <transcript_path> <session_id>',
+				);
+				return true;
+			}
+			console.log(
+				`Processing JSONL transcript: ${transcript_path} for session ${session_id}`,
+			);
+			await process_jsonl_transcript(
+				transcript_path,
+				session_id,
+				true,
+			);
+			console.log('Transcript processing completed.');
+			return true;
+		},
+	};
+
+	const COMMANDS: Record<string, CommandHandler> = {
+		help: async () => {
 			print_help();
 			return true;
-		case '--version':
+		},
+		'-h': async () => COMMANDS.help([]),
+		'--help': async () => COMMANDS.help([]),
+		'--version': async () => {
 			print_version();
 			return true;
-		case 'config':
+		},
+		config: async () => {
 			await run_cli();
 			return true;
-		case 'analytics':
+		},
+		analytics: async () => {
 			await run_analytics_dashboard();
 			return true;
-		case 'quick-stats':
+		},
+		'quick-stats': async () => {
 			await show_quick_stats();
 			return true;
-		case 'install': {
+		},
+		install: async () => {
 			const ok = await install_claude_integration([
 				'statusline',
 				'hooks',
@@ -83,8 +115,8 @@ export async function handle_cli(argv: string[]): Promise<boolean> {
 				console.log('Installation cancelled or failed.');
 			}
 			return true;
-		}
-		case 'uninstall': {
+		},
+		uninstall: async () => {
 			const ok = await uninstall_claude_integration([
 				'statusline',
 				'hooks',
@@ -95,45 +127,23 @@ export async function handle_cli(argv: string[]): Promise<boolean> {
 				console.log('Uninstallation cancelled or failed.');
 			}
 			return true;
-		}
-		case 'transcripts': {
+		},
+		transcripts: async (rest: string[]) => {
 			const sub = rest[0];
-			if (sub === 'process-all') {
-				console.log('Processing all pending JSONL transcripts...');
-				await process_all_pending_transcripts();
-				console.log('Transcript processing completed.');
+			const handler = TRANSCRIPTS[sub];
+			if (!handler) {
+				console.error('Unknown transcripts command.');
+				console.error(
+					'Usage: transcripts process-all | transcripts process-one <path> <session_id>',
+				);
 				return true;
 			}
-			if (sub === 'process-one') {
-				const transcript_path = rest[1];
-				const session_id = rest[2];
-				if (!transcript_path || !session_id) {
-					console.error(
-						'Usage: transcripts process-one <transcript_path> <session_id>',
-					);
-					return true;
-				}
-				console.log(
-					`Processing JSONL transcript: ${transcript_path} for session ${session_id}`,
-				);
-				await process_jsonl_transcript(
-					transcript_path,
-					session_id,
-					true,
-				);
-				console.log('Transcript processing completed.');
-				return true;
-			}
-			// Unknown transcripts subcommand -> show help segment
-			console.error('Unknown transcripts command.');
-			console.error(
-				'Usage: transcripts process-all | transcripts process-one <path> <session_id>',
-			);
-			return true;
-		}
-		// No legacy flags supported (no users yet)
-		default:
-			// Not a recognized CLI command — likely statusline/hook invocation
-			return false;
-	}
+			return handler(rest.slice(1));
+		},
+	};
+
+	const [cmd, ...rest] = argv;
+	const handler = COMMANDS[cmd];
+	if (!handler) return false;
+	return handler(rest);
 }
