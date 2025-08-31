@@ -1,5 +1,11 @@
 # claude-code-analytics
 
+## 0.0.4
+
+### Patch Changes
+
+- f78431c: use the binary name not the dist for onboarding!
+
 ## 0.0.3
 
 ### Patch Changes
