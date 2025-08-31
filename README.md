@@ -76,30 +76,84 @@ bun add -g claude-code-analytics
 volta install claude-code-analytics
 ```
 
-## Setup
+## First Run (Onboarding)
 
-After installing, you need to hook it into Claude Code:
+After installing, run:
 
 ```bash
-claude-code-analytics --config
+claude-code-analytics
 ```
 
-This will walk you through setting up the statusline and hooks in your
-`~/.claude/settings.json`.
+You’ll be prompted to:
+
+- Confirm local storage: creates `~/.claude/claude-code-analytics.db`
+  (SQLite) and never sends data over the network.
+- Choose components: install the statusline and/or lightweight hooks
+  into `~/.claude/settings.json`.
+- Enable data collection: can be changed later in
+  `~/.claude/claude-code-analytics.json`.
+
+Onboarding only appears the first time you run the CLI interactively.
+Claude Code invoking the binary will never show prompts.
+
+## Commands
+
+- `claude-code-analytics config`: Interactive configuration
+  (statusline, hooks, settings).
+- `claude-code-analytics analytics`: Interactive analytics dashboard
+  (tables and ASCII charts).
+- `claude-code-analytics quick-stats`: One-shot 7‑day summary.
+- `claude-code-analytics install | uninstall`: Install/remove
+  statusline and hooks without prompts.
+- `claude-code-analytics --help | --version`: Show help/version.
+
+Advanced (optional):
+
+- `claude-code-analytics transcripts process-all`
+- `claude-code-analytics transcripts process-one <transcript.jsonl> <session_id>`
 
 ## Usage
 
-Once configured, just use Claude Code normally. The tool runs in the
-background collecting data.
+- Use Claude Code normally. The statusline and hooks record session
+  metadata locally for analytics.
+- View analytics anytime with `claude-code-analytics analytics` or a
+  quick summary with `claude-code-analytics quick-stats`.
 
-To view your analytics:
+## Data & Privacy
 
-```bash
-claude-code-analytics --config
+- Database: `~/.claude/claude-code-analytics.db` (SQLite, local-only).
+- Config: `~/.claude/claude-code-analytics.json`.
+- Claude integration: `~/.claude/settings.json` (non-destructive; only
+  our entries).
+- No telemetry or network calls.
+
+To disable collection, set `data_collection: false` in
+`~/.claude/claude-code-analytics.json`.
+
+### Per‑Project Configuration
+
+You can override settings per project with a local config file at:
+
+- `<project>/.claude/claude-code-analytics.json`
+
+Example (this repo):
+`claude-code-analytics/.claude/claude-code-analytics.json`
+
+Project config deep‑merges over the global config. Useful for:
+
+- Disabling collection in a specific repo
+- Customizing the statusline layout per project
+
+Example:
+
+```json
+{
+	"data_collection": true,
+	"display": {
+		"layout": [
+			["git", "model"],
+			["cost", "duration", "lines_changed"]
+		]
+	}
+}
 ```
-
-Pick what you want to see - cost trends, activity patterns, tool
-usage, productivity metrics, etc.
-
-Your data lives in `~/.claude/claude-code-analytics.db` and never
-leaves your machine.
