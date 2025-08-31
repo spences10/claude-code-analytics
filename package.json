@@ -12,7 +12,8 @@
 		"format:check": "prettier --check .",
 		"changeset": "changeset",
 		"version": "changeset version",
-		"release": "pnpm run build && changeset publish"
+		"release": "pnpm run build && changeset publish",
+		"postinstall": "node dist/statusline.js --setup"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.29.6",

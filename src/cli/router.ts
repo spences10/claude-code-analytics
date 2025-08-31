@@ -13,6 +13,7 @@ import {
 	install_claude_integration,
 	uninstall_claude_integration,
 } from './commands/hooks';
+import { run_onboarding } from './onboarding';
 
 function print_help(): void {
 	const lines = [
@@ -126,6 +127,10 @@ export async function handle_cli(argv: string[]): Promise<boolean> {
 			} else {
 				console.log('Uninstallation cancelled or failed.');
 			}
+			return true;
+		},
+		'--setup': async () => {
+			await run_onboarding();
 			return true;
 		},
 		transcripts: async (rest: string[]) => {
