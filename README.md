@@ -96,6 +96,14 @@ You’ll be prompted to:
 Onboarding only appears the first time you run the CLI interactively.
 Claude Code invoking the binary will never show prompts.
 
+Tip: To confirm the CLI is available on your PATH, try:
+
+```bash
+claude-code-analytics -h
+```
+
+This should print the help text.
+
 ## Commands
 
 - `claude-code-analytics config`: Interactive configuration

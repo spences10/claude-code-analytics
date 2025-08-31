@@ -4,7 +4,7 @@
 	"description": "CLI tool for Claude Code analytics and statusline integration",
 	"main": "dist/statusline.js",
 	"bin": {
-		"claude-code-analytics": "./dist/statusline.js"
+		"claude-code-analytics": "dist/cli-entry.js"
 	},
 	"scripts": {
 		"build": "tsc && cp ./src/database/schema.sql ./dist/database/schema.sql",
@@ -12,8 +12,7 @@
 		"format:check": "prettier --check .",
 		"changeset": "changeset",
 		"version": "changeset version",
-		"release": "pnpm run build && changeset publish",
-		"postinstall": "node ./dist/statusline.js --setup"
+		"release": "pnpm run build && changeset publish"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.29.6",

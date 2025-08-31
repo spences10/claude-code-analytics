@@ -40,11 +40,23 @@ function print_help(): void {
 
 function print_version(): void {
 	try {
-		const pkgPath = path.join(__dirname, '..', 'package.json');
-		const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as {
-			version?: string;
-		};
-		console.log(pkg.version || '0.0.0');
+		// Try dist root (when running from source) and package root (when installed)
+		const candidates = [
+			path.join(__dirname, '..', 'package.json'),
+			path.join(__dirname, '..', '..', 'package.json'),
+		];
+		let pkg: { version?: string } = {};
+		for (const p of candidates) {
+			try {
+				pkg = JSON.parse(fs.readFileSync(p, 'utf8')) as {
+					version?: string;
+				};
+				break;
+			} catch {}
+		}
+		const version =
+			pkg.version || process.env.npm_package_version || '0.0.0';
+		console.log(version);
 	} catch {
 		console.log('unknown');
 	}
