@@ -25,6 +25,11 @@ export interface StatuslineConfig {
 			height?: number;
 			points?: number;
 		};
+		context?: {
+			token_limit?: number; // default 200k
+			mode?: 'latest' | 'session_total' | 'recent_n';
+			recent_n?: number; // for recent_n mode
+		};
 		layout?: string[][];
 		verbose?: boolean;
 	};

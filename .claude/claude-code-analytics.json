@@ -2,39 +2,37 @@
 	"data_collection": true,
 	"performance_logging": true,
 	"hook_logging": true,
-	"theme": "minimal",
-	"verbose": false,
-	"colors": true,
-	"bar_width": 12,
-	"sparkline": {
-		"width": 20,
-		"height": 2,
-		"points": 20
-	},
 	"display": {
+		"theme": "minimal",
+		"icons": true,
+		"verbose": false,
+		"colors": true,
+		"bar_width": 12,
+		"sparkline": {
+			"width": 20,
+			"height": 2,
+			"points": 20
+		},
+		"context": {
+			"token_limit": 200000,
+			"mode": "latest",
+			"recent_n": 5
+		},
 		"layout": [
 			[
-				"working_directory"
-			],
-			[
 				"git",
-				"model",
-				"cache_efficiency"
+				"model"
 			],
 			[
 				"cost",
 				"duration"
 			],
 			[
-				"lines_changed",
-				"tool_performance"
-			],
-			[
 				"tool_gauge",
 				"cache_gauge"
 			],
 			[
-				"lines_bar"
+				"context_gauge"
 			],
 			[
 				"cost_sparkline"
