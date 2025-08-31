@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { get_database } from '../../database';
 import { StatsRow } from '../../types';
 
-export function get_quick_stats(days: number = 7): StatsRow {
+function get_stats_for_range(whereClause: string): StatsRow {
 	const db = get_database();
 
 	// Avoid cost inflation by not joining tool_calls when summing costs
@@ -12,17 +12,17 @@ export function get_quick_stats(days: number = 7): StatsRow {
 SELECT
   (SELECT COUNT(DISTINCT session_id)
      FROM sessions
-     WHERE started_at >= datetime('now', '-${days} days')) AS total_sessions,
+     WHERE ${whereClause}) AS total_sessions,
   (SELECT SUM(total_cost_usd)
      FROM sessions
-     WHERE started_at >= datetime('now', '-${days} days')) AS total_cost,
+     WHERE ${whereClause}) AS total_cost,
   (SELECT COUNT(DISTINCT project_id)
      FROM sessions
-     WHERE started_at >= datetime('now', '-${days} days')) AS total_projects,
+     WHERE ${whereClause}) AS total_projects,
   (SELECT COUNT(*)
      FROM tool_calls tc
      JOIN sessions s2 ON s2.session_id = tc.session_id
-     WHERE s2.started_at >= datetime('now', '-${days} days')) AS total_tools
+     WHERE ${whereClause.replace(/started_at/g, 's2.started_at')}) AS total_tools
       `,
 		)
 		.get() as StatsRow;
@@ -30,13 +30,55 @@ SELECT
 	return stats;
 }
 
-export async function show_quick_stats(days: number = 7) {
-	const stats = get_quick_stats(days);
-	console.log(chalk.cyan('\n📈 Last 7 Days Summary:'));
-	console.log(`  Sessions: ${stats.total_sessions}`);
-	console.log(
-		`  Cost: $${Number(String(stats.total_cost || 0)).toFixed(2)}`,
+export function get_quick_stats(days: number = 7): StatsRow {
+	return get_stats_for_range(
+		`started_at >= datetime('now', '-${days} days')`,
 	);
-	console.log(`  Projects: ${stats.total_projects}`);
-	console.log(`  Tool Calls: ${stats.total_tools}`);
+}
+
+function format_delta(
+	current: number,
+	previous: number,
+	suffix = '',
+): string {
+	const curr = Number(current || 0);
+	const prev = Number(previous || 0);
+	if (!isFinite(curr) || !isFinite(prev)) return chalk.dim(' (n/a)');
+	if (prev === 0 && curr === 0) return chalk.dim(' (0%)');
+	if (prev === 0) return chalk.green(' (new)');
+	const change = ((curr - prev) / prev) * 100;
+	const arrow = change >= 0 ? '▲' : '▼';
+	const color = change >= 0 ? chalk.green : chalk.red;
+	return color(` ${arrow} ${Math.abs(change).toFixed(1)}%${suffix}`);
+}
+
+export async function show_quick_stats(days: number = 7) {
+	const current = get_stats_for_range(
+		`started_at >= datetime('now', '-${days} days')`,
+	);
+	const previous = get_stats_for_range(
+		`started_at < datetime('now', '-${days} days') AND started_at >= datetime('now', '-${days * 2} days')`,
+	);
+
+	console.log(chalk.cyan(`\n📈 Last ${days} Days Summary:`));
+	console.log(
+		`  Sessions: ${current.total_sessions}` +
+			format_delta(current.total_sessions, previous.total_sessions),
+	);
+	const costStr = `$${Number(String(current.total_cost || 0)).toFixed(2)}`;
+	console.log(
+		`  Cost: ${costStr}` +
+			format_delta(
+				Number(current.total_cost || 0),
+				Number(previous.total_cost || 0),
+			),
+	);
+	console.log(
+		`  Projects: ${current.total_projects}` +
+			format_delta(current.total_projects, previous.total_projects),
+	);
+	console.log(
+		`  Tool Calls: ${current.total_tools}` +
+			format_delta(current.total_tools, previous.total_tools),
+	);
 }

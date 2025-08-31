@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { get_database } from '../../database';
 import { CostRow, ToolRow } from '../../types';
 import {
+	create_bar_chart,
 	create_line_chart,
 	create_summary_table,
 	create_usage_table,
@@ -10,6 +11,7 @@ import {
 import { show_activity_analytics } from '../analytics/activity';
 import { show_files_analytics } from '../analytics/files';
 import { show_models_analytics } from '../analytics/models';
+import { show_overview_dashboard } from '../analytics/overview';
 import {
 	show_performance_analytics,
 	show_tool_success_analytics,
@@ -28,6 +30,11 @@ const ANALYTICS: Record<
 	string,
 	{ label: string; hint?: string; run: AnalyticsHandler }
 > = {
+	overview: {
+		label: 'Overview Dashboard',
+		hint: 'Summary, cost trend, tools, 24h activity',
+		run: show_overview_dashboard,
+	},
 	costs: {
 		label: 'Cost Analytics',
 		hint: 'Daily spend trends with ASCII line charts',
@@ -252,6 +259,17 @@ async function show_tools_analytics(days: number) {
 	}
 
 	console.log(chalk.blue.bold(`\nTop Tools (Last ${days} Days)\n`));
+	// Bar chart visualization
+	const barLabels = tool_usage.map((t) =>
+		t.tool_name.length > 8
+			? '…' + t.tool_name.slice(-7)
+			: t.tool_name,
+	);
+	const barData = tool_usage.map((t) => t.usage_count);
+	console.log(
+		create_bar_chart(barData, barLabels, { height: 8, width: 2 }),
+	);
+	console.log();
 
 	const table_data = tool_usage.map((tool) => [
 		tool.tool_name,
