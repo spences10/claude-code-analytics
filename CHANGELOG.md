@@ -1,5 +1,11 @@
 # claude-code-analytics
 
+## 0.0.6
+
+### Patch Changes
+
+- 2f8ebd7: update onboarding, again
+
 ## 0.0.5
 
 ### Patch Changes
