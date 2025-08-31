@@ -96,18 +96,37 @@ export async function show_tool_success_analytics(days: number) {
 		chalk.blue.bold(`\nTool Success Rates (Last ${days} Days)\n`),
 	);
 
-	const table_data = tool_success.map((tool) => [
-		tool.tool_name.length > 20
-			? '...' + tool.tool_name.slice(-17)
-			: tool.tool_name,
-		tool.total_calls.toString(),
-		tool.successful.toString(),
-		tool.failed.toString(),
-		`${tool.success_rate}%`,
-		tool.avg_execution_time
-			? `${tool.avg_execution_time.toFixed(0)}ms`
-			: 'N/A',
-	]);
+	const table_data = tool_success.map((tool) => {
+		const name_cell =
+			tool.tool_name.length > 20
+				? '...' + tool.tool_name.slice(-17)
+				: tool.tool_name;
+		const failure_rate = 100 - (tool.success_rate || 0);
+		const failed_cell =
+			failure_rate > 10 || tool.failed >= 5
+				? chalk.red(tool.failed.toString())
+				: tool.failed.toString();
+		const rate_color =
+			(tool.success_rate || 0) >= 95
+				? chalk.green
+				: (tool.success_rate || 0) >= 85
+					? chalk.yellow
+					: chalk.red;
+		const rate_cell = rate_color(`${tool.success_rate}%`);
+		const avg_time_cell = tool.avg_execution_time
+			? tool.avg_execution_time > 2000
+				? chalk.yellow(`${tool.avg_execution_time.toFixed(0)}ms`)
+				: `${tool.avg_execution_time.toFixed(0)}ms`
+			: 'N/A';
+		return [
+			name_cell,
+			tool.total_calls.toString(),
+			tool.successful.toString(),
+			failed_cell,
+			rate_cell,
+			avg_time_cell,
+		];
+	});
 
 	const table = create_usage_table(
 		['Tool', 'Total', 'Success', 'Failed', 'Rate', 'Avg Time'],

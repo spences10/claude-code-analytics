@@ -9,6 +9,7 @@ import {
 	create_usage_table,
 } from '../../utils/charts';
 import { show_activity_analytics } from '../analytics/activity';
+import { show_activity_condensed } from '../analytics/activity_condensed';
 import { show_cache_efficiency } from '../analytics/cache';
 import { show_cost_hotspots } from '../analytics/cost_hotspots';
 import { show_error_trends } from '../analytics/error_trends';
@@ -54,6 +55,11 @@ const ANALYTICS: Record<
 		label: 'Activity Patterns',
 		hint: 'Activity heatmap with ASCII blocks',
 		run: show_activity_analytics,
+	},
+	activity_condensed: {
+		label: 'Activity (Condensed)',
+		hint: '2-hour blocks heatmap for compact display',
+		run: show_activity_condensed,
 	},
 	productivity: {
 		label: 'Productivity Metrics',
@@ -290,14 +296,14 @@ async function show_tools_analytics(days: number) {
 
 	console.log(chalk.blue.bold(`\nTop Tools (Last ${days} Days)\n`));
 	// Bar chart visualization
-	const barLabels = tool_usage.map((t) =>
+	const bar_labels = tool_usage.map((t) =>
 		t.tool_name.length > 8
-			? '…' + t.tool_name.slice(-7)
+			? '...' + t.tool_name.slice(-7)
 			: t.tool_name,
 	);
-	const barData = tool_usage.map((t) => t.usage_count);
+	const bar_data = tool_usage.map((t) => t.usage_count);
 	console.log(
-		create_bar_chart(barData, barLabels, { height: 8, width: 2 }),
+		create_bar_chart(bar_data, bar_labels, { height: 8, width: 2 }),
 	);
 	console.log();
 

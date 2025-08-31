@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { get_database } from '../../database';
 import { StatsRow } from '../../types';
 
-function get_stats_for_range(whereClause: string): StatsRow {
+function get_stats_for_range(where_clause: string): StatsRow {
 	const db = get_database();
 
 	// Avoid cost inflation by not joining tool_calls when summing costs
@@ -12,17 +12,17 @@ function get_stats_for_range(whereClause: string): StatsRow {
 SELECT
   (SELECT COUNT(DISTINCT session_id)
      FROM sessions
-     WHERE ${whereClause}) AS total_sessions,
+     WHERE ${where_clause}) AS total_sessions,
   (SELECT SUM(total_cost_usd)
      FROM sessions
-     WHERE ${whereClause}) AS total_cost,
+     WHERE ${where_clause}) AS total_cost,
   (SELECT COUNT(DISTINCT project_id)
      FROM sessions
-     WHERE ${whereClause}) AS total_projects,
+     WHERE ${where_clause}) AS total_projects,
   (SELECT COUNT(*)
      FROM tool_calls tc
      JOIN sessions s2 ON s2.session_id = tc.session_id
-     WHERE ${whereClause.replace(/started_at/g, 's2.started_at')}) AS total_tools
+     WHERE ${where_clause.replace(/started_at/g, 's2.started_at')}) AS total_tools
       `,
 		)
 		.get() as StatsRow;
@@ -47,7 +47,7 @@ function format_delta(
 	if (prev === 0 && curr === 0) return chalk.dim(' (0%)');
 	if (prev === 0) return chalk.green(' (new)');
 	const change = ((curr - prev) / prev) * 100;
-	const arrow = change >= 0 ? '▲' : '▼';
+	const arrow = change >= 0 ? '^' : 'v';
 	const color = change >= 0 ? chalk.green : chalk.red;
 	return color(` ${arrow} ${Math.abs(change).toFixed(1)}%${suffix}`);
 }
@@ -65,9 +65,9 @@ export async function show_quick_stats(days: number = 7) {
 		`  Sessions: ${current.total_sessions}` +
 			format_delta(current.total_sessions, previous.total_sessions),
 	);
-	const costStr = `$${Number(String(current.total_cost || 0)).toFixed(2)}`;
+	const cost_str = `$${Number(String(current.total_cost || 0)).toFixed(2)}`;
 	console.log(
-		`  Cost: ${costStr}` +
+		`  Cost: ${cost_str}` +
 			format_delta(
 				Number(current.total_cost || 0),
 				Number(previous.total_cost || 0),

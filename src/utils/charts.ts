@@ -318,14 +318,18 @@ export function create_dashboard_box(
 		'┌─ ' +
 		title +
 		' ' +
-		'─'.repeat(Math.max(0, width - title_len - 4)) +
+		'─'.repeat(Math.max(0, width - title_len - 5)) +
 		'┐';
 	const bottom_line = '└' + '─'.repeat(width - 2) + '┘';
 
 	let result = chalk.cyan(top_line) + '\n';
 	content.forEach((line) => {
 		const pad_len = Math.max(0, width - visible_length(line) - 3);
-		const padding = ' '.repeat(pad_len);
+		const trimmed = line.trimStart();
+		const is_axis_line =
+			trimmed.startsWith('└') && trimmed.includes('─');
+		const pad_char = is_axis_line ? '─' : ' ';
+		const padding = pad_char.repeat(pad_len);
 		result +=
 			chalk.cyan('│') + ' ' + line + padding + chalk.cyan('│') + '\n';
 	});

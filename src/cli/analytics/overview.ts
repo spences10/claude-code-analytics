@@ -14,16 +14,16 @@ interface StatsRow {
 	total_tools: number;
 }
 
-function get_stats_for_range(whereClause: string): StatsRow {
+function get_stats_for_range(where_clause: string): StatsRow {
 	const db = get_database();
 	const stats = db
 		.prepare(
 			`
 SELECT
-  (SELECT COUNT(DISTINCT session_id) FROM sessions WHERE ${whereClause}) AS total_sessions,
-  (SELECT SUM(total_cost_usd) FROM sessions WHERE ${whereClause}) AS total_cost,
-  (SELECT COUNT(DISTINCT project_id) FROM sessions WHERE ${whereClause}) AS total_projects,
-  (SELECT COUNT(*) FROM tool_calls tc JOIN sessions s2 ON s2.session_id = tc.session_id WHERE ${whereClause.replace(
+  (SELECT COUNT(DISTINCT session_id) FROM sessions WHERE ${where_clause}) AS total_sessions,
+  (SELECT SUM(total_cost_usd) FROM sessions WHERE ${where_clause}) AS total_cost,
+  (SELECT COUNT(DISTINCT project_id) FROM sessions WHERE ${where_clause}) AS total_projects,
+  (SELECT COUNT(*) FROM tool_calls tc JOIN sessions s2 ON s2.session_id = tc.session_id WHERE ${where_clause.replace(
 		/started_at/g,
 		's2.started_at',
 	)}) AS total_tools
@@ -40,7 +40,7 @@ function format_delta(current: number, previous: number): string {
 	if (prev === 0 && curr === 0) return chalk.dim('(0%)');
 	if (prev === 0) return chalk.green('(new)');
 	const change = ((curr - prev) / prev) * 100;
-	const arrow = change >= 0 ? '▲' : '▼';
+	const arrow = change >= 0 ? '^' : 'v';
 	const color = change >= 0 ? chalk.green : chalk.red;
 	return color(`${arrow} ${Math.abs(change).toFixed(1)}%`);
 }
@@ -56,7 +56,7 @@ export async function show_overview_dashboard(days: number) {
 		`started_at < datetime('now', '-${days} days') AND started_at >= datetime('now', '-${days * 2} days')`,
 	);
 
-	const summaryLines = [
+	const summary_lines = [
 		`Sessions: ${current.total_sessions}  ${format_delta(
 			current.total_sessions,
 			previous.total_sessions,
@@ -78,7 +78,7 @@ export async function show_overview_dashboard(days: number) {
 	console.log(
 		create_dashboard_box(
 			`Overview (Last ${days} Days)`,
-			summaryLines,
+			summary_lines,
 		),
 	);
 	console.log();
@@ -124,13 +124,13 @@ export async function show_overview_dashboard(days: number) {
 		.all() as { tool_name: string; usage_count: number }[];
 
 	if (tool_usage.length > 0) {
-		const labels = tool_usage.map((t) =>
+		const tool_labels = tool_usage.map((t) =>
 			t.tool_name.length > 8
-				? '…' + t.tool_name.slice(-7)
+				? '...' + t.tool_name.slice(-7)
 				: t.tool_name,
 		);
-		const data = tool_usage.map((t) => t.usage_count);
-		const bars = create_bar_chart(data, labels, {
+		const tool_data = tool_usage.map((t) => t.usage_count);
+		const bars = create_bar_chart(tool_data, tool_labels, {
 			height: 6,
 			width: 2,
 		});
@@ -151,12 +151,12 @@ export async function show_overview_dashboard(days: number) {
 		)
 		.all() as { hour: string; session_count: number }[];
 
-	const strip: number[] = new Array(24).fill(0);
+	const activity_strip: number[] = new Array(24).fill(0);
 	hourly_activity.forEach((r) => {
 		const h = parseInt(r.hour, 10);
-		if (!Number.isNaN(h)) strip[h] = r.session_count;
+		if (!Number.isNaN(h)) activity_strip[h] = r.session_count;
 	});
-	const heat = create_activity_heatmap([strip], {
+	const heat = create_activity_heatmap([activity_strip], {
 		days: ['24h'],
 		hours: Array.from({ length: 24 }, (_, i) =>
 			i.toString().padStart(2, '0'),

@@ -28,7 +28,7 @@ export async function show_cost_hotspots(days: number) {
 
 	if (top_sessions.length) {
 		const labels = top_sessions.map(
-			(s) => '…' + s.session_id.slice(-7),
+			(s) => '...' + s.session_id.slice(-7),
 		);
 		const data = top_sessions.map((s) => Number(s.cost || 0));
 		console.log(
@@ -38,7 +38,7 @@ export async function show_cost_hotspots(days: number) {
 		const table = create_usage_table(
 			['Session', 'Cost'],
 			top_sessions.map((s) => [
-				'…' + s.session_id.slice(-8),
+				'...' + s.session_id.slice(-8),
 				`$${Number(s.cost || 0).toFixed(2)}`,
 			]),
 		);
@@ -75,13 +75,13 @@ export async function show_cost_hotspots(days: number) {
 			grid[d][h] = Number(r.cost || 0);
 		});
 		const day_labels = [
+			'Sun',
 			'Mon',
 			'Tue',
 			'Wed',
 			'Thu',
 			'Fri',
 			'Sat',
-			'Sun',
 		];
 		const hour_labels = Array.from({ length: 24 }, (_, i) =>
 			i.toString().padStart(2, '0'),

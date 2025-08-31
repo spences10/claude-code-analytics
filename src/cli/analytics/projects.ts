@@ -53,14 +53,17 @@ export async function show_projects_analytics(days: number) {
 		chalk.blue.bold(`\nProject Intelligence (Last ${days} Days)\n`),
 	);
 
-	const labels = rows.map((r) =>
+	const project_labels = rows.map((r) =>
 		r.project_name.length > 10
-			? '…' + r.project_name.slice(-9)
+			? '...' + r.project_name.slice(-9)
 			: r.project_name,
 	);
-	const data = rows.map((r) => r.session_count);
+	const project_data = rows.map((r) => r.session_count);
 	console.log(
-		create_bar_chart(data, labels, { height: 8, width: 2 }),
+		create_bar_chart(project_data, project_labels, {
+			height: 8,
+			width: 2,
+		}),
 	);
 	console.log();
 

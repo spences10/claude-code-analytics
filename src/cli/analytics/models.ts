@@ -51,14 +51,17 @@ export async function show_models_analytics(days: number) {
 	);
 
 	// Bar chart by sessions per model
-	const labels = rows.map((r) =>
+	const model_labels = rows.map((r) =>
 		r.model_name.length > 10
-			? '…' + r.model_name.slice(-9)
+			? '...' + r.model_name.slice(-9)
 			: r.model_name,
 	);
-	const data = rows.map((r) => r.session_count);
+	const model_data = rows.map((r) => r.session_count);
 	console.log(
-		create_bar_chart(data, labels, { height: 8, width: 2 }),
+		create_bar_chart(model_data, model_labels, {
+			height: 8,
+			width: 2,
+		}),
 	);
 	console.log();
 
