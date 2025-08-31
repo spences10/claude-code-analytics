@@ -2,6 +2,12 @@ import { plot } from 'asciichart';
 import chalk from 'chalk';
 import Table from 'cli-table3';
 
+// Helper: visible length ignoring ANSI color codes
+const ANSI_REGEX = /\x1B\[[0-?]*[ -\/]*[@-~]/g;
+function visible_length(str: string): number {
+	return str.replace(ANSI_REGEX, '').length;
+}
+
 export interface LineChartOptions {
 	height?: number;
 	format?: (value: number) => string;
@@ -302,17 +308,24 @@ export function create_dashboard_box(
 	title: string,
 	content: string[],
 ): string {
-	const width = Math.max(
-		40,
-		Math.max(...content.map((line) => line.length)) + 4,
-	);
+	const min_width = 40;
+	const content_max = content.length
+		? Math.max(...content.map((line) => visible_length(line)))
+		: 0;
+	const width = Math.max(min_width, content_max + 4);
+	const title_len = visible_length(title);
 	const top_line =
-		'┌─ ' + title + ' ' + '─'.repeat(width - title.length - 4) + '┐';
+		'┌─ ' +
+		title +
+		' ' +
+		'─'.repeat(Math.max(0, width - title_len - 4)) +
+		'┐';
 	const bottom_line = '└' + '─'.repeat(width - 2) + '┘';
 
 	let result = chalk.cyan(top_line) + '\n';
 	content.forEach((line) => {
-		const padding = ' '.repeat(Math.max(0, width - line.length - 3));
+		const pad_len = Math.max(0, width - visible_length(line) - 3);
+		const padding = ' '.repeat(pad_len);
 		result +=
 			chalk.cyan('│') + ' ' + line + padding + chalk.cyan('│') + '\n';
 	});

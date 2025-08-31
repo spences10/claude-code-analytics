@@ -9,7 +9,11 @@ import {
 	create_usage_table,
 } from '../../utils/charts';
 import { show_activity_analytics } from '../analytics/activity';
+import { show_cache_efficiency } from '../analytics/cache';
+import { show_cost_hotspots } from '../analytics/cost_hotspots';
+import { show_error_trends } from '../analytics/error_trends';
 import { show_files_analytics } from '../analytics/files';
+import { show_latency_distributions } from '../analytics/latency';
 import { show_models_analytics } from '../analytics/models';
 import { show_overview_dashboard } from '../analytics/overview';
 import {
@@ -23,6 +27,7 @@ import {
 	show_session_quality_analytics,
 } from '../analytics/quality';
 import { show_quick_stats } from '../analytics/summary';
+import { show_token_usage } from '../analytics/tokens';
 
 type AnalyticsHandler = (days: number) => Promise<void>;
 
@@ -75,10 +80,20 @@ const ANALYTICS: Record<
 		hint: 'Hook execution times and overhead analysis',
 		run: show_performance_analytics,
 	},
+	latency: {
+		label: 'Tool Latency Distros',
+		hint: 'p50/p95/p99 execution times per tool',
+		run: show_latency_distributions,
+	},
 	success: {
 		label: 'Tool Success Rates',
 		hint: 'Tool reliability and failure analysis',
 		run: show_tool_success_analytics,
+	},
+	error_trends: {
+		label: 'Error Trend',
+		hint: 'Failures per day and top offenders',
+		run: show_error_trends,
 	},
 	quality: {
 		label: 'Session Quality',
@@ -89,6 +104,21 @@ const ANALYTICS: Record<
 		label: 'Error Analysis',
 		hint: 'Common errors and troubleshooting insights',
 		run: show_error_analysis,
+	},
+	cache: {
+		label: 'Cache Efficiency',
+		hint: 'Cache reads, created tokens, hit rate',
+		run: show_cache_efficiency,
+	},
+	tokens: {
+		label: 'Token Usage',
+		hint: 'Input/output tokens by model',
+		run: show_token_usage,
+	},
+	cost_hotspots: {
+		label: 'Cost Hotspots',
+		hint: 'Top costly sessions and cost-by-hour',
+		run: show_cost_hotspots,
 	},
 	quick: {
 		label: 'Quick Stats',
