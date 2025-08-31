@@ -28,7 +28,11 @@ async function main() {
 		if (handled) return;
 
 		// First-time onboarding for humans only (never for Claude hooks)
-		if (process.stdin.isTTY && needs_onboarding()) {
+		// Be tolerant of environments where stdin isn't a TTY but stdout is.
+		if (
+			(process.stdin.isTTY || (process.stdout as any).isTTY) &&
+			needs_onboarding()
+		) {
 			await run_onboarding();
 			return;
 		}

@@ -10,7 +10,6 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { save_global_config } from '../config';
-import { get_db_path } from '../database/connection';
 import { install_claude_integration } from './commands/hooks';
 
 const CLAUDE_DIR = path.join(os.homedir(), '.claude');
@@ -44,10 +43,11 @@ function has_integration_installed(): boolean {
 }
 
 export function needs_onboarding(): boolean {
+	// A minimal, predictable signal: if user already integrated or configured, no onboarding.
+	// Do NOT block onboarding on the presence of a DB file; it may exist from prior tests.
 	if (file_exists(ONBOARD_SKIP)) return false;
 	if (has_integration_installed()) return false;
 	if (file_exists(CONFIG_PATH)) return false;
-	if (file_exists(get_db_path())) return false;
 	return true;
 }
 
