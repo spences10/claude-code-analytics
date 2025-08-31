@@ -13,6 +13,8 @@ import { run_configuration } from './commands/config';
 export async function run_cli() {
 	intro('🌟 Claude Code Analytics & Configuration');
 
+	console.log('Hint: Press Esc to go back in submenus.');
+
 	const main_action = await select({
 		message: 'What would you like to do?',
 		options: [
@@ -77,7 +79,7 @@ export async function run_cli() {
 				);
 			} else if (result.action === 'settings') {
 				outro(
-					`Configuration "${result.name}" saved!\nData collection: ${result.data_collection}\nPerformance logging: ${result.performance_logging}`,
+					`Settings updated!\nData collection: ${result.data_collection}\nPerformance logging: ${result.performance_logging}`,
 				);
 			}
 		} else {

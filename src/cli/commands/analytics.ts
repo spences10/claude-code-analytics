@@ -138,26 +138,68 @@ const ANALYTICS: Record<
 export { show_quick_stats } from '../analytics/summary';
 
 export async function run_analytics_dashboard() {
+	// Group analytics to reduce list length and add hierarchy
+	const GROUPS: Record<string, { label: string; items: string[] }> = {
+		overview: {
+			label: 'Overview & Summary',
+			items: ['overview', 'quick'],
+		},
+		activity: {
+			label: 'Activity',
+			items: ['activity', 'activity_condensed'],
+		},
+		costs: {
+			label: 'Costs & Tokens',
+			items: ['costs', 'tokens', 'cost_hotspots'],
+		},
+		tools: {
+			label: 'Tools & Performance',
+			items: ['tools', 'performance', 'latency', 'success', 'cache'],
+		},
+		errors: {
+			label: 'Errors & Quality',
+			items: ['errors', 'error_trends', 'quality'],
+		},
+		projects: {
+			label: 'Projects & Files',
+			items: ['projects', 'files'],
+		},
+		models: { label: 'Models', items: ['models'] },
+	};
+
 	while (true) {
-		const options = [
-			...Object.entries(ANALYTICS).map(
-				([value, { label, hint }]) => ({
+		const group_choice = await select({
+			message: 'Choose an analytics group:',
+			options: [
+				...Object.entries(GROUPS).map(([value, g]) => ({
 					value,
-					label,
-					hint,
-				}),
-			),
-			{ value: 'back', label: 'Back to Main Menu' },
+					label: g.label,
+				})),
+				{ value: 'back', label: 'Back to Main Menu' },
+			],
+		});
+
+		if (isCancel(group_choice) || group_choice === 'back') break;
+
+		const group = GROUPS[String(group_choice)];
+		if (!group) continue;
+
+		const subgroup_options = [
+			...group.items.map((key) => ({
+				value: key,
+				label: ANALYTICS[key]?.label || key,
+				hint: ANALYTICS[key]?.hint,
+			})),
+			{ value: 'back', label: 'Back' },
 		];
 
 		const analytics_choice = await select({
 			message: 'Choose analytics to view:',
-			options,
+			options: subgroup_options,
 		});
 
-		if (isCancel(analytics_choice) || analytics_choice === 'back') {
-			break;
-		}
+		if (isCancel(analytics_choice) || analytics_choice === 'back')
+			continue;
 
 		const days = await text({
 			message: 'How many days to analyze?',
@@ -172,7 +214,6 @@ export async function run_analytics_dashboard() {
 		});
 
 		if (isCancel(days)) continue;
-
 		const day_count = parseInt(days as string);
 
 		try {
@@ -196,10 +237,7 @@ export async function run_analytics_dashboard() {
 		const continue_choice = await confirm({
 			message: 'View more analytics?',
 		});
-
-		if (isCancel(continue_choice) || !continue_choice) {
-			break;
-		}
+		if (isCancel(continue_choice) || !continue_choice) break;
 	}
 }
 
