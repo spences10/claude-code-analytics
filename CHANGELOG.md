@@ -1,5 +1,11 @@
 # claude-code-analytics
 
+## 0.0.3
+
+### Patch Changes
+
+- 3efdffb: add postinstall for onboarding
+
 ## 0.0.2
 
 ### Patch Changes
