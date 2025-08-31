@@ -1,189 +1,105 @@
-# Claude Code Analytics & Enhanced Statusline
+# Claude Code Analytics
 
-> A comprehensive statusline tool with data collection, analytics, and
-> reporting for Claude Code users.
+This is Claude Code Analytics! It uses ClaudeCode statusline and
+Claude Code hooks to store information about your Claude Code sessions
+in a local SQLite database.
 
-## What This Is
+There's a CLI for some reports, Cost Analytics...
 
-An **enhanced Claude Code statusline** that not only shows real-time
-session data but also **collects, stores, and analyzes** your Claude
-Code usage patterns over time.
+```ascii
+◇  How many days to analyze?
+│  7
 
-### Core Features
+Cost Trend (Last 7 Days)
 
-🔄 **Enhanced Real-time Statusline Display**
+   $21.47    ┤                           ╭────────────────╮
+   $19.55    ┤                         ╭─╯                ╰──╮
+   $17.63    ┤                       ╭─╯                     ╰──╮
+   $15.71    ┤                     ╭─╯                          ╰──╮
+   $13.78    ┤                  ╭──╯                               ╰───╮
+   $11.86    ┤                ╭─╯                                      ╰─
+    $9.94    ┤             ╭──╯
+    $8.02    ┤   ╭─────────╯
+    $6.10    ┼───╯
 
-- Smart cost formatting with efficiency indicators (⭐ high, ⚠️ low)
-- Human-readable duration display (2m 30s vs 150000ms)
-- Git status with clean/dirty indicators (🌿 main ✓ vs 🌿 main ●)
-- Tool performance tracking with success rates (🔧 85% ✅)
-- **Token cache efficiency tracking** with visual indicators (🚀 90%+,
-  ⚡ 70%+, 🐌 <50%)
-- **Cache savings display** in K/M format (🏃‍♂️ 100% (77K) 🚀)
-- Working directory context and lines changed metrics
+Total Cost        │$68.11
+Total Sessions    │87
+Avg Cost/Session  │$0.78
+Daily Average     │$9.73
+```
 
-📊 **Data Collection & Analytics**
+Activity patterns...
 
-- Every tool call, file operation, and session tracked
-- **Token caching metrics** with cache read/creation analysis
-- SQLite database with rich schema (9 tables + cache fields)
-- Hook-driven collection with ~0.1ms performance impact
+```ascii
+◇  How many days to analyze?
+│  7
 
-📈 **Usage Analytics** _(Coming Soon)_
+Activity Heatmap (Last 7 Days)
 
-- Console-based reports and visualizations
-- Personal productivity insights
-- **Cache optimization recommendations** and efficiency analysis
-- Cost optimization recommendations
-- Project comparison and trends
+Total: 88 sessions across 5 days
+Peak: 13 sessions on 2025-08-27 at 20:00
 
-## Current Status
+    00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+Sun ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░
+Mon ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░
+Tue ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ▓▓ ▓▓ ▓▓ ░░ ░░ ░░ ░░ ░░ ▓▓ ░░ ░░ ▓▓ ░░ ░░ ░░ ░░
+Wed ░░ ░░ ░░ ░░ ░░ ░░ ░░ ▓▓ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ▓▓ ░░ ██ ▓▓ ░░ ░░
+Thu ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ▓▓ ██ ░░ ░░ ░░ ░░ ░░ ░░ ▓▓ ▓▓ ▓▓ ▓▓ ░░ ░░ ░░ ░░
+Fri ░░ ░░ ░░ ░░ ░░ ▓▓ ▓▓ ▓▓ ▓▓ ░░ ░░ ▓▓ ░░ ░░ ░░ ░░ ▓▓ ░░ ░░ ░░ ░░ ░░ ░░ ░░
+Sat ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ▓▓ ░░ ░░ ░░ ░░ ░░ ░░ ░░ ▓▓ ░░ ▓▓ ▓▓ ▓▓ ░░ ░░
 
-**✅ Phase 1 Complete: Data Foundation**
+██ High (9+)  ▓▓ Medium (5-9)  ░░ Low (0-5)
 
-- Hook system capturing all Claude Code events
-- Comprehensive SQLite schema with incremental processing
-- **Token caching data extraction** from JSONL conversation files
-- 77+ sessions, 4,000+ messages, 2,000+ tool calls collected
-- Silent operation (no user disruption)
+Top Activity Hours:
+  1. Wed 20:00 (2025-08-27): 13 sessions
+  2. Thu 09:00 (2025-08-28): 9 sessions
+  3. Tue 10:00 (2025-08-26): 8 sessions
+  4. Thu 18:00 (2025-08-28): 7 sessions
+  5. Thu 16:00 (2025-08-28): 6 sessions
+```
 
-**✅ Enhanced Statusline Complete**
+## Installation
 
-- Two-tier display system (basic + database-powered)
-- Productivity insights with efficiency rankings
-- Real-time tool performance indicators
-- **Token cache efficiency tracking** with 99.7% rates observed
-- Smart cost analysis with historical comparisons
-- Works independently with graceful fallbacks
-
-**🚧 Phase 2 In Progress: CLI Analytics & Reports**
-
-- Console-based analytics commands
-- Personal productivity insights dashboard
-- Advanced data visualization tools
-
-## Quick Start
-
-### 1. Installation & Setup
+Install globally with your preferred package manager:
 
 ```bash
-# Clone and build
-git clone <repo>
-cd claude-code-analytics
-pnpm install && pnpm build
+# npm
+npm install -g claude-code-analytics
 
-# Configure Claude Code statusline
-# Add to ~/.claude/settings.json:
-{
-  "statusLine": {
-    "type": "command",
-    "command": "node /path/to/dist/statusline.js"
-  },
-  "hooks": {
-    "SessionStart": [{"hooks": [{"type": "command", "command": "node /path/to/dist/statusline.js session_start"}]}],
-    "PostToolUse": [{"hooks": [{"type": "command", "command": "node /path/to/dist/statusline.js post_tool_use"}]}],
-    "Stop": [{"hooks": [{"type": "command", "command": "node /path/to/dist/statusline.js session_stop"}]}]
-  }
-}
+# pnpm
+pnpm add -g claude-code-analytics
+
+# bun
+bun add -g claude-code-analytics
+
+# volta
+volta install claude-code-analytics
 ```
 
-### 2. Start Using Claude Code
+## Setup
 
-Your statusline will display real-time data while collecting analytics
-in the background.
-
-### 3. View Your Data _(Coming Soon)_
+After installing, you need to hook it into Claude Code:
 
 ```bash
-# Session summaries
-claude-code-analytics summary
-
-# Cost breakdowns
-claude-code-analytics costs --last-week
-
-# Tool usage stats
-claude-code-analytics tools --top-10
-
-# Project insights
-claude-code-analytics projects
+claude-code-analytics --config
 ```
 
-## Database Schema
+This will walk you through setting up the statusline and hooks in your
+`~/.claude/settings.json`.
 
-The system maintains a SQLite database at
-`~/.claude/claude-code-analytics.db` with:
+## Usage
 
-- **Sessions** - Every Claude Code session with timing, costs, metrics
-- **Messages** - Full conversation history with **token caching
-  analytics**
-- **Tool Calls** - Every tool execution with success/failure tracking
-- **Files** - File access patterns and modification history
-- **Projects** - Cross-project analytics and comparisons
-- **Hook Events** - Real-time event capture for performance monitoring
+Once configured, just use Claude Code normally. The tool runs in the
+background collecting data.
 
-## Configuration
-
-```json
-// ~/.claude/claude-code-analytics.json
-{
-	"data_collection": true,
-	"hook_logging": false,
-	"display": {
-		"show_cost": true,
-		"show_duration": true,
-		"show_lines_changed": true,
-		"show_model": true
-	},
-	"thresholds": {
-		"cost_warning": 1.0,
-		"token_warning": 100000
-	}
-}
-```
-
-## Architecture
-
-```
-Claude Code Session
-├── Real-time Status (300ms) → Enhanced Statusline Display
-├── Hook Events → Data Collection Engine
-├── JSONL Transcripts → Message & Tool Analysis
-└── SQLite Database → Analytics & Reporting
-```
-
-## Data Privacy
-
-- All data stored locally in `~/.claude/claude-code-analytics.db`
-- No external data transmission
-- Configurable data collection controls
-- Hook operations run silently by default
-
-## Development
+To view your analytics:
 
 ```bash
-# Development setup
-pnpm install
-pnpm build
-pnpm dev
-
-# Processing transcripts manually
-node dist/statusline.js --process-transcripts
+claude-code-analytics --config
 ```
 
-## Roadmap
+Pick what you want to see - cost trends, activity patterns, tool
+usage, productivity metrics, etc.
 
-- [ ] Console-based charts and graphs
-- [ ] Personal productivity analytics
-- [ ] **Cache optimization insights** and efficiency recommendations
-- [ ] Cost optimization insights
-- [ ] Project comparison reports
-- [ ] Export capabilities (CSV, JSON)
-- [ ] Advanced session analysis
-- [ ] Trend forecasting
-- [ ] Additional hook events (Notification, SubagentStop, PreCompact)
-- [ ] Enhanced security and input validation
-
----
-
-**Built for Claude Code power users who want to understand and
-optimize their AI-assisted development workflows.**
+Your data lives in `~/.claude/claude-code-analytics.db` and never
+leaves your machine.
