@@ -1,5 +1,11 @@
 # claude-code-analytics
 
+## 0.0.5
+
+### Patch Changes
+
+- 8186d35: relative built path to onboarding script
+
 ## 0.0.4
 
 ### Patch Changes
