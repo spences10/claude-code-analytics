@@ -6,9 +6,7 @@ import {
 	select,
 	spinner,
 } from '@clack/prompts';
-import chalk from 'chalk';
-import { get_database } from '../database';
-import { StatsRow } from '../types';
+import { show_quick_stats } from './analytics/summary';
 import { run_analytics_dashboard } from './commands/analytics';
 import { run_configuration } from './commands/config';
 
@@ -45,33 +43,8 @@ export async function run_cli() {
 		const s = spinner();
 		s.start('Loading your Claude Code stats...');
 
-		const db = get_database();
-
-		const stats = db
-			.prepare(
-				`
-			SELECT 
-				COUNT(DISTINCT s.session_id) as total_sessions,
-				SUM(s.total_cost_usd) as total_cost,
-				COUNT(DISTINCT p.project_id) as total_projects,
-				COUNT(tc.tool_call_id) as total_tools
-			FROM sessions s
-			LEFT JOIN projects p ON s.project_id = p.project_id
-			LEFT JOIN tool_calls tc ON s.session_id = tc.session_id
-			WHERE s.started_at >= datetime('now', '-7 days')
-		`,
-			)
-			.get() as StatsRow;
-
 		s.stop('Stats loaded!');
-
-		console.log(chalk.cyan('\n📈 Last 7 Days Summary:'));
-		console.log(`  Sessions: ${stats.total_sessions}`);
-		console.log(
-			`  Cost: $${Number(String(stats.total_cost || 0)).toFixed(2)}`,
-		);
-		console.log(`  Projects: ${stats.total_projects}`);
-		console.log(`  Tool Calls: ${stats.total_tools}`);
+		await show_quick_stats();
 
 		outro(
 			'Quick stats complete! Use Analytics Dashboard for detailed views.',

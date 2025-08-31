@@ -1,7 +1,7 @@
 import { confirm, isCancel, select, text } from '@clack/prompts';
 import chalk from 'chalk';
 import { get_database } from '../../database';
-import { CostRow, StatsRow, ToolRow } from '../../types';
+import { CostRow, ToolRow } from '../../types';
 import {
 	create_line_chart,
 	create_summary_table,
@@ -20,34 +20,7 @@ import {
 	show_error_analysis,
 	show_session_quality_analytics,
 } from '../analytics/quality';
-
-export async function show_quick_stats() {
-	const db = get_database();
-
-	const stats = db
-		.prepare(
-			`
-		SELECT 
-			COUNT(DISTINCT s.session_id) as total_sessions,
-			SUM(s.total_cost_usd) as total_cost,
-			COUNT(DISTINCT p.project_id) as total_projects,
-			COUNT(tc.tool_call_id) as total_tools
-		FROM sessions s
-		LEFT JOIN projects p ON s.project_id = p.project_id
-		LEFT JOIN tool_calls tc ON s.session_id = tc.session_id
-		WHERE s.started_at >= datetime('now', '-7 days')
-	`,
-		)
-		.get() as StatsRow;
-
-	console.log(chalk.cyan('\n📈 Last 7 Days Summary:'));
-	console.log(`  Sessions: ${stats.total_sessions}`);
-	console.log(
-		`  Cost: $${Number(String(stats.total_cost || 0)).toFixed(2)}`,
-	);
-	console.log(`  Projects: ${stats.total_projects}`);
-	console.log(`  Tool Calls: ${stats.total_tools}`);
-}
+export { show_quick_stats } from '../analytics/summary';
 
 export async function run_analytics_dashboard() {
 	while (true) {
