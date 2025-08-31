@@ -1,5 +1,11 @@
 # claude-code-analytics
 
+## 0.0.8
+
+### Patch Changes
+
+- 84a2e69: improve CLI options
+
 ## 0.0.7
 
 ### Patch Changes
