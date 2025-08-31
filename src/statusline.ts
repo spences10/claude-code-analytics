@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { needs_onboarding, run_onboarding } from './cli/onboarding';
 import { handle_cli } from './cli/router';
 import {
 	is_data_collection_enabled,
@@ -25,6 +26,12 @@ async function main() {
 		// Route CLI commands first; if handled, exit before statusline logic
 		const handled = await handle_cli(process.argv.slice(2));
 		if (handled) return;
+
+		// First-time onboarding for humans only (never for Claude hooks)
+		if (process.stdin.isTTY && needs_onboarding()) {
+			await run_onboarding();
+			return;
+		}
 
 		// Legacy flags removed; CLI commands are handled by router above
 
