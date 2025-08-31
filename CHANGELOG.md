@@ -1,5 +1,11 @@
 # claude-code-analytics
 
+## 0.0.7
+
+### Patch Changes
+
+- 66cbb74: redo onboarding checks
+
 ## 0.0.6
 
 ### Patch Changes
