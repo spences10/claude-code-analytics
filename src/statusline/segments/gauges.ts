@@ -97,35 +97,45 @@ export const context_gauge: SegmentRenderer = (
 				.prepare(
 					`SELECT 
 					SUM(COALESCE(token_count_input,0)) as tin,
-					SUM(COALESCE(token_count_output,0)) as tout
+					SUM(COALESCE(token_count_output,0)) as tout,
+					SUM(COALESCE(cache_read_input_tokens,0)) as cache_read
 				FROM messages WHERE session_id = ?`,
 				)
 				.get(data.session_id) as any;
-			used_tokens = Number(row?.tin || 0) + Number(row?.tout || 0);
+			used_tokens =
+				Number(row?.tin || 0) +
+				Number(row?.tout || 0) +
+				Number(row?.cache_read || 0);
 		} else if (mode === 'recent_n' && data.session_id) {
 			const rows = db
 				.prepare(
-					`SELECT token_count_input as tin 
+					`SELECT 
+						token_count_input as tin,
+						cache_read_input_tokens as cache_read
 					FROM messages 
 					WHERE session_id = ? AND role = 'assistant'
 					ORDER BY message_index DESC LIMIT ?`,
 				)
 				.all(data.session_id, recent_n) as any[];
 			used_tokens = rows.reduce(
-				(sum, r) => sum + Number(r?.tin || 0),
+				(sum, r) =>
+					sum + Number(r?.tin || 0) + Number(r?.cache_read || 0),
 				0,
 			);
 		} else {
 			// latest assistant turn overall
 			const row = db
 				.prepare(
-					`SELECT token_count_input as tin 
+					`SELECT 
+						token_count_input as tin,
+						cache_read_input_tokens as cache_read
 					FROM messages 
 					WHERE role = 'assistant'
 					ORDER BY timestamp DESC LIMIT 1`,
 				)
 				.get() as any;
-			used_tokens = Number(row?.tin || 0);
+			used_tokens =
+				Number(row?.tin || 0) + Number(row?.cache_read || 0);
 		}
 
 		if (token_limit <= 0) return null;

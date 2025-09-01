@@ -1,0 +1,924 @@
+{
+  "timestamp": "2025-09-01T07:04:43.813Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 0.9125666500000003,
+      "total_duration_ms": 466380,
+      "total_api_duration_ms": 169888,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:04:44.114Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 0.9125666500000003,
+      "total_duration_ms": 466681,
+      "total_api_duration_ms": 169888,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:05:45.472Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 0.9129802500000003,
+      "total_duration_ms": 528041,
+      "total_api_duration_ms": 171327,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:05:47.096Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 0.9537621000000003,
+      "total_duration_ms": 529664,
+      "total_api_duration_ms": 178384,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:05:53.355Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 0.9802818000000003,
+      "total_duration_ms": 535922,
+      "total_api_duration_ms": 184430,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:05:57.561Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.0072819500000003,
+      "total_duration_ms": 540130,
+      "total_api_duration_ms": 188361,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:06:01.390Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.0346235000000004,
+      "total_duration_ms": 543959,
+      "total_api_duration_ms": 191919,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:06:06.080Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.0638157500000003,
+      "total_duration_ms": 548649,
+      "total_api_duration_ms": 196339,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:06:17.558Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.1001123000000004,
+      "total_duration_ms": 560128,
+      "total_api_duration_ms": 207565,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:08:24.728Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.1286644500000003,
+      "total_duration_ms": 687296,
+      "total_api_duration_ms": 214082,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:08:28.464Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.1582291500000004,
+      "total_duration_ms": 691033,
+      "total_api_duration_ms": 217575,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:08:40.471Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.1908726000000003,
+      "total_duration_ms": 703038,
+      "total_api_duration_ms": 227559,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:08:50.414Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.1908726000000003,
+      "total_duration_ms": 712984,
+      "total_api_duration_ms": 227559,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:08:50.715Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.1908726000000003,
+      "total_duration_ms": 713285,
+      "total_api_duration_ms": 227559,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:09:51.641Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.2225223500000004,
+      "total_duration_ms": 774211,
+      "total_api_duration_ms": 235919,
+      "total_lines_added": 11,
+      "total_lines_removed": 6
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:09:54.573Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.2225223500000004,
+      "total_duration_ms": 777136,
+      "total_api_duration_ms": 235919,
+      "total_lines_added": 13,
+      "total_lines_removed": 8
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:09:58.894Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.2538987500000005,
+      "total_duration_ms": 781464,
+      "total_api_duration_ms": 239910,
+      "total_lines_added": 13,
+      "total_lines_removed": 8
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:10:00.948Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.2538987500000005,
+      "total_duration_ms": 783508,
+      "total_api_duration_ms": 239910,
+      "total_lines_added": 15,
+      "total_lines_removed": 10
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:10:04.200Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.2538987500000005,
+      "total_duration_ms": 786770,
+      "total_api_duration_ms": 239910,
+      "total_lines_added": 15,
+      "total_lines_removed": 10
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:10:15.393Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.2988276500000004,
+      "total_duration_ms": 797961,
+      "total_api_duration_ms": 254026,
+      "total_lines_added": 15,
+      "total_lines_removed": 10
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:10:18.953Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.2988276500000004,
+      "total_duration_ms": 801522,
+      "total_api_duration_ms": 254026,
+      "total_lines_added": 15,
+      "total_lines_removed": 10
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:10:19.258Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.3322179500000004,
+      "total_duration_ms": 801826,
+      "total_api_duration_ms": 257818,
+      "total_lines_added": 15,
+      "total_lines_removed": 10
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:10:19.309Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.3322179500000004,
+      "total_duration_ms": 801879,
+      "total_api_duration_ms": 257818,
+      "total_lines_added": 15,
+      "total_lines_removed": 10
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:10:25.504Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.3608712500000004,
+      "total_duration_ms": 808074,
+      "total_api_duration_ms": 263796,
+      "total_lines_added": 15,
+      "total_lines_removed": 10
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:10:35.159Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.4023620000000003,
+      "total_duration_ms": 817730,
+      "total_api_duration_ms": 273176,
+      "total_lines_added": 15,
+      "total_lines_removed": 10
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:11:57.355Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.4023620000000003,
+      "total_duration_ms": 899916,
+      "total_api_duration_ms": 273176,
+      "total_lines_added": 45,
+      "total_lines_removed": 15
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:12:02.908Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.4361327000000004,
+      "total_duration_ms": 905474,
+      "total_api_duration_ms": 278340,
+      "total_lines_added": 45,
+      "total_lines_removed": 15
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---
+{
+  "timestamp": "2025-09-01T07:12:06.331Z",
+  "data": {
+    "session_id": "4a877e2a-b28d-4b41-a808-af28c0bb9875",
+    "transcript_path": "/home/scott/.claude/projects/-home-scott-repos-claude-code-analytics/4a877e2a-b28d-4b41-a808-af28c0bb9875.jsonl",
+    "cwd": "/home/scott/repos/claude-code-analytics",
+    "model": {
+      "id": "claude-sonnet-4-20250514",
+      "display_name": "Sonnet 4"
+    },
+    "workspace": {
+      "current_dir": "/home/scott/repos/claude-code-analytics",
+      "project_dir": "/home/scott/repos/claude-code-analytics"
+    },
+    "version": "1.0.93",
+    "output_style": {
+      "name": "default"
+    },
+    "cost": {
+      "total_cost_usd": 1.4361327000000004,
+      "total_duration_ms": 908894,
+      "total_api_duration_ms": 278340,
+      "total_lines_added": 45,
+      "total_lines_removed": 15
+    },
+    "exceeds_200k_tokens": false
+  },
+  "argv": [
+    "/home/scott/.volta/tools/image/node/22.13.1/bin/node",
+    "/home/scott/repos/claude-code-analytics/dist/statusline.js"
+  ]
+}
+---

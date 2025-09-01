@@ -53,12 +53,12 @@ export const cost_sparkline: SegmentRenderer = (
 		const rows = db
 			.prepare(
 				`SELECT total_cost_usd as c FROM sessions 
-                         WHERE total_cost_usd IS NOT NULL 
-                         ORDER BY started_at DESC 
-                         LIMIT ?`,
+					WHERE total_cost_usd IS NOT NULL 
+					ORDER BY started_at ASC 
+					LIMIT ?`,
 			)
 			.all(points) as { c: number }[];
-		const values = rows.map((r) => Number(r.c || 0)).reverse();
+		const values = rows.map((r) => Number(r.c || 0));
 		if (values.length === 0) return null;
 		const width = Math.max(
 			5,
@@ -100,13 +100,13 @@ export const cache_reads_sparkline: SegmentRenderer = (
 				GROUP BY
 					s.session_id
 				ORDER BY
-					s.started_at DESC
+					s.started_at ASC
 				LIMIT
 					?
 				`,
 			)
 			.all(points) as { r: number }[];
-		const values = rows.map((r) => Number(r.r || 0)).reverse();
+		const values = rows.map((r) => Number(r.r || 0));
 		if (values.length === 0) return null;
 		const width = Math.max(
 			5,
@@ -194,7 +194,13 @@ export const streak_bar: SegmentRenderer = (
 				`,
 			)
 			.all() as { d: string; c: number }[];
-		const set = new Set(rows.map((r) => r.d));
+		// Create a map of date -> count
+		const counts = new Map<string, number>();
+		rows.forEach((r) => counts.set(r.d, r.c));
+		const max_count = rows.length
+			? Math.max(...rows.map((r) => r.c))
+			: 0;
+
 		const use_colors = (config.display as any)?.colors !== false;
 		const ascii =
 			config.display?.theme === 'ascii' ||
@@ -204,10 +210,31 @@ export const streak_bar: SegmentRenderer = (
 			const d = new Date();
 			d.setDate(d.getDate() - i);
 			const iso = d.toISOString().slice(0, 10);
-			let ch = ascii ? '.' : '░';
-			if (set.has(iso)) ch = ascii ? '█' : '█';
-			if (use_colors && !ascii) {
-				ch = set.has(iso) ? chalk.green(ch) : chalk.gray(ch);
+			const count = counts.get(iso) || 0;
+
+			let ch: string;
+			if (count === 0) {
+				ch = ascii ? '.' : '░';
+			} else if (ascii) {
+				// ASCII: use different chars for intensity
+				if (count === 1) ch = '▪';
+				else if (count <= 3) ch = '▫';
+				else if (count <= 10) ch = '■';
+				else ch = '█';
+			} else {
+				// Unicode: use block intensities
+				if (count === 1) ch = '▁';
+				else if (count <= 3) ch = '▃';
+				else if (count <= 10) ch = '▆';
+				else ch = '█';
+			}
+
+			if (use_colors && !ascii && count > 0) {
+				if (count >= max_count * 0.8) ch = chalk.green(ch);
+				else if (count >= max_count * 0.4) ch = chalk.yellow(ch);
+				else ch = chalk.cyan(ch);
+			} else if (use_colors && !ascii) {
+				ch = chalk.gray(ch);
 			}
 			out += ch;
 		}
