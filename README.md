@@ -244,3 +244,69 @@ Upcoming improvements
 - Theme presets that bundle layout + color choices (e.g., Minimal,
   Dense)
 - Optional ASCII‑only mode across all views for maximal portability
+
+## Statusline Segments
+
+Add segments to `display.layout` (each inner array is a row).
+Available segments:
+
+- Core: `git`, `model`, `cost`, `duration`, `lines_changed`,
+  `tool_performance`, `cache_efficiency`, `working_directory`
+- Gauges: `tool_gauge` (tool success %), `cache_gauge` (cache
+  efficiency %), `context_gauge` (context tokens vs limit)
+- Bars: `lines_bar` (added vs removed)
+- Sparklines: `cost_sparkline` (recent session costs),
+  `cache_reads_sparkline` (cache read tokens per session)
+- Activity: `activity_strip` (last 24h hourly activity), `streak_bar`
+  (last 7 days usage)
+- Mix: `model_mix` (top 3 models compact bands)
+- Ambient: `ambient_wave`, `ambient_bounce`, `ambient_marquee`,
+  `ambient_spinner`, `ambient_twinkle`, `ambient_wave_sine`
+
+Segment options (under `display`)
+
+- `colors`: boolean — enable color cues (default: true)
+- `bar_width`: number — width for gauges/bars (default: 10–12)
+- `sparkline`: `{ width, height, points }` — size and history length
+  for sparklines
+- `context`: `{ token_limit, mode, recent_n }` — context gauge
+  configuration
+  - `token_limit`: default `200000` (200k tokens)
+  - `mode`: `latest` | `session_total` | `recent_n` (default `latest`)
+  - `recent_n`: number of assistant turns when `mode = recent_n`
+
+Example multi‑row layout
+
+```json
+{
+	"display": {
+		"theme": "minimal",
+		"colors": true,
+		"bar_width": 12,
+		"sparkline": { "width": 20, "height": 2, "points": 20 },
+		"context": {
+			"token_limit": 200000,
+			"mode": "latest",
+			"recent_n": 5
+		},
+		"layout": [
+			["working_directory"],
+			["git", "model"],
+			["cost", "duration"],
+			["tool_gauge", "cache_gauge"],
+			["context_gauge"],
+			["activity_strip"],
+			["streak_bar"],
+			["model_mix"],
+			["cache_reads_sparkline"],
+			["ambient_wave"],
+			["ambient_bounce"],
+			["ambient_marquee"],
+			["ambient_spinner"],
+			["ambient_twinkle"],
+			["ambient_wave_sine"],
+			["cost_sparkline"]
+		]
+	}
+}
+```
