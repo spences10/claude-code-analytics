@@ -26,7 +26,7 @@ slowing down your workflow.
 
 _Sometimes the best solution is the most over-engineered one!_ 😂
 
-There's a CLI for some reports, Cost Analytics...
+There's a CLI for reports and analytics, for example Cost Analytics...
 
 ```ascii
 ◇  How many days to analyze?
@@ -100,23 +100,23 @@ volta install claude-code-analytics
 
 ## First Run (Onboarding)
 
-After installing, run:
+Run interactive setup to install the statusline and hooks:
 
 ```bash
-claude-code-analytics
+claude-code-analytics config
 ```
 
-You’ll be prompted to:
+This lets you:
 
-- Confirm local storage: creates `~/.claude/claude-code-analytics.db`
-  (SQLite) and never sends data over the network.
-- Choose components: install the statusline and/or lightweight hooks
-  into `~/.claude/settings.json`.
-- Enable data collection: can be changed later in
+- Install the statusline and/or lightweight hooks in
+  `~/.claude/settings.json`.
+- Enable or disable local data collection in
   `~/.claude/claude-code-analytics.json`.
 
-Onboarding only appears the first time you run the CLI interactively.
-Claude Code invoking the binary will never show prompts.
+Note: Running `claude-code-analytics` with no arguments is intended
+for Claude Code statusline integration and isn’t useful on its own in
+a terminal. Use subcommands like `config`, `analytics`, or
+`quick-stats`.
 
 Tip: To confirm the CLI is available on your PATH, try:
 
@@ -137,10 +137,8 @@ This should print the help text.
   statusline and hooks without prompts.
 - `claude-code-analytics --help | --version`: Show help/version.
 
-Advanced (optional):
-
-- `claude-code-analytics transcripts process-all`
-- `claude-code-analytics transcripts process-one <transcript.jsonl> <session_id>`
+Default behaviour: When invoked without arguments (or by Claude Code),
+the binary runs in statusline mode.
 
 ## Usage
 
