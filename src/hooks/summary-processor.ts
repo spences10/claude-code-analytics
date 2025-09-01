@@ -223,13 +223,14 @@ export function update_sparkline_cache(): void {
 			)
 			.all() as { efficiency: number }[];
 
-		// Activity strip (24h by hour)
+		// Activity strip (24h by hour) - user message activity
 		const activity_data = db
 			.prepare(
-				`SELECT strftime('%H', started_at) as h, COUNT(*) as c
-				FROM sessions
-				WHERE started_at >= datetime('now', '-1 day')
-				GROUP BY strftime('%H', started_at)
+				`SELECT strftime('%H', timestamp) as h, COUNT(*) as c
+				FROM messages
+				WHERE timestamp >= datetime('now', '-1 day')
+					AND role = 'user'
+				GROUP BY strftime('%H', timestamp)
 				ORDER BY h`,
 			)
 			.all() as { h: string; c: number }[];
