@@ -1,6 +1,6 @@
 {
 	"name": "claude-code-analytics",
-	"version": "0.0.10",
+	"version": "0.0.11",
 	"description": "CLI tool for Claude Code analytics and statusline integration",
 	"main": "dist/statusline.js",
 	"bin": {

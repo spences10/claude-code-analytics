@@ -1,5 +1,14 @@
 # claude-code-analytics
 
+## 0.0.11
+
+### Patch Changes
+
+- 842b346: add cost statusline segments
+- 41b4019: fix activity to reflect messages not tools calls
+- 0a9d76e: use pre-cached db results, update schema, add migration
+- ed0d8dd: fix context and cache segments
+
 ## 0.0.10
 
 ### Patch Changes
