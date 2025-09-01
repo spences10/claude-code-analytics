@@ -27,6 +27,18 @@ export function update_session_summary(session_id: string): void {
 			)
 			.get(session_id) as any;
 
+		// Get current context (latest assistant message only)
+		const latest_context = db
+			.prepare(
+				`SELECT 
+					COALESCE(token_count_input, 0) as input_tokens,
+					COALESCE(cache_read_input_tokens, 0) as cache_reads
+				FROM messages 
+				WHERE session_id = ? AND role = 'assistant'
+				ORDER BY message_index DESC LIMIT 1`,
+			)
+			.get(session_id) as any;
+
 		const tool_stats = db
 			.prepare(
 				`SELECT 
@@ -46,8 +58,9 @@ export function update_session_summary(session_id: string): void {
 		const total_cache_creates = Number(
 			session_totals?.cache_creates || 0,
 		);
-		const total_context =
-			total_input + total_output + total_cache_reads;
+		const current_context =
+			Number(latest_context?.input_tokens || 0) +
+			Number(latest_context?.cache_reads || 0); // Current context window state
 
 		const total_tools = Number(tool_stats?.total_tools || 0);
 		const successful_tools = Number(
@@ -97,7 +110,7 @@ export function update_session_summary(session_id: string): void {
 			total_cache_creates,
 			total_input,
 			total_output,
-			total_context,
+			current_context,
 		);
 	} catch (error) {
 		// Silent failure - don't interrupt Claude Code
@@ -188,18 +201,27 @@ export function update_sparkline_cache(): void {
 			)
 			.all() as { c: number }[];
 
-		// Cache reads sparkline (last 20 sessions)
+		// Cache efficiency sparkline (last 20 sessions)
 		const cache_data = db
 			.prepare(
-				`SELECT SUM(COALESCE(cache_read_input_tokens, 0)) as r
+				`SELECT 
+					s.session_id,
+					SUM(COALESCE(cache_read_input_tokens, 0)) as reads,
+					SUM(COALESCE(cache_creation_input_tokens, 0)) as creates,
+					CASE 
+						WHEN (SUM(COALESCE(cache_read_input_tokens, 0)) + SUM(COALESCE(cache_creation_input_tokens, 0))) > 0 
+						THEN (SUM(COALESCE(cache_read_input_tokens, 0)) * 100.0) / (SUM(COALESCE(cache_read_input_tokens, 0)) + SUM(COALESCE(cache_creation_input_tokens, 0)))
+						ELSE 0 
+					END as efficiency
 				FROM sessions s
 				JOIN messages m ON m.session_id = s.session_id
 				WHERE m.role = 'assistant'
+					AND (m.cache_read_input_tokens > 0 OR m.cache_creation_input_tokens > 0)
 				GROUP BY s.session_id
-				ORDER BY s.started_at ASC
+				ORDER BY s.started_at DESC
 				LIMIT 20`,
 			)
-			.all() as { r: number }[];
+			.all() as { efficiency: number }[];
 
 		// Activity strip (24h by hour)
 		const activity_data = db
@@ -231,7 +253,9 @@ export function update_sparkline_cache(): void {
 			],
 			[
 				'cache_sparkline_20',
-				JSON.stringify(cache_data.map((r) => Number(r.r || 0))),
+				JSON.stringify(
+					cache_data.map((r) => Number(r.efficiency || 0)),
+				),
 			],
 			['activity_hourly_24h', JSON.stringify(activity_data)],
 			['streak_daily_7d', JSON.stringify(streak_data)],

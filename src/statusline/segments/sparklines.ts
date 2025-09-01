@@ -74,7 +74,7 @@ export const fast_activity_strip: SegmentRenderer = (
 		config.display?.theme === 'ascii' ||
 		config.display?.icons === false;
 
-	let out = 'Act ';
+	let out = 'Activity ';
 	for (let i = 0; i < 24; i++) {
 		const v = buckets[i];
 		let ch = ascii ? '.' : '░';
