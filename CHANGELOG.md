@@ -1,5 +1,12 @@
 # claude-code-analytics
 
+## 0.0.10
+
+### Patch Changes
+
+- ba37f10: refactor builder.ts
+- 82dbba8: update activity gauges and visuals
+
 ## 0.0.9
 
 ### Patch Changes
