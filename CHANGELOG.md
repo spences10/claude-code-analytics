@@ -1,5 +1,14 @@
 # claude-code-analytics
 
+## 0.0.9
+
+### Patch Changes
+
+- a2ddd80: add theming support
+- 58f0131: add additioanl ambient segemnts
+- df54773: add in sparkline stats
+- d032201: add context progress bar
+
 ## 0.0.8
 
 ### Patch Changes
