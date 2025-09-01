@@ -1,5 +1,6 @@
 import * as ambient from './ambient';
 import * as basic from './basic';
+import * as cost_analytics from './cost-analytics';
 import * as enhanced from './enhanced';
 import * as gauges from './gauges';
 import * as performance from './performance';
@@ -19,6 +20,15 @@ export const segments: Record<string, SegmentRenderer> = {
 	cost: enhanced.fast_cost,
 	tool_performance: enhanced.fast_tool_performance,
 	cache_efficiency: enhanced.fast_cache_efficiency,
+
+	// Cost analytics segments
+	total_cost: cost_analytics.total_cost,
+	daily_avg_cost: cost_analytics.daily_avg_cost,
+	session_vs_avg: cost_analytics.session_vs_avg,
+	cost_percentile: cost_analytics.cost_percentile,
+	cost_velocity: cost_analytics.cost_velocity,
+	monthly_projection: cost_analytics.monthly_projection,
+	cost_gauge_monthly: cost_analytics.cost_gauge_monthly,
 
 	// Gauge visualizations
 	tool_gauge: gauges.fast_tool_gauge,

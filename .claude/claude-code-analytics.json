@@ -48,6 +48,21 @@
 				"cost_sparkline"
 			],
 			[
+				"total_cost",
+				"daily_avg_cost"
+			],
+			[
+				"session_vs_avg",
+				"cost_percentile"
+			],
+			[
+				"cost_velocity",
+				"monthly_projection"
+			],
+			[
+				"cost_gauge_monthly"
+			],
+			[
 				"ambient_wave"
 			]
 		]

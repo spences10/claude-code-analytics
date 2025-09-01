@@ -164,6 +164,71 @@ export function update_global_summary(): void {
 			)
 			.get() as any;
 
+		// Cost analytics calculations
+		const cost_totals = db
+			.prepare(
+				`SELECT 
+					SUM(total_cost_usd) as total_all_time,
+					AVG(total_cost_usd) as avg_session_all_time,
+					SUM(CASE WHEN started_at >= datetime('now', '-30 days') THEN total_cost_usd ELSE 0 END) as total_30d,
+					SUM(CASE WHEN started_at >= datetime('now', '-7 days') THEN total_cost_usd ELSE 0 END) as total_7d,
+					SUM(CASE WHEN DATE(started_at) >= DATE('now', 'start of month') THEN total_cost_usd ELSE 0 END) as total_current_month
+				FROM sessions 
+				WHERE total_cost_usd IS NOT NULL`,
+			)
+			.get() as any;
+
+		const cost_velocity = db
+			.prepare(
+				`SELECT AVG(total_cost_usd) as velocity_7d
+				FROM sessions 
+				WHERE started_at >= datetime('now', '-7 days') 
+					AND total_cost_usd IS NOT NULL`,
+			)
+			.get() as any;
+
+		const cost_trend = db
+			.prepare(
+				`SELECT 
+					AVG(CASE WHEN started_at >= datetime('now', '-7 days') THEN total_cost_usd END) as recent_avg,
+					AVG(CASE WHEN started_at >= datetime('now', '-14 days') AND started_at < datetime('now', '-7 days') THEN total_cost_usd END) as prev_avg
+				FROM sessions 
+				WHERE total_cost_usd IS NOT NULL`,
+			)
+			.get() as any;
+
+		// Calculate derived cost metrics
+		const total_all_time = Number(cost_totals?.total_all_time || 0);
+		const avg_session_all_time = Number(
+			cost_totals?.avg_session_all_time || 0,
+		);
+		const total_30d = Number(cost_totals?.total_30d || 0);
+		const total_7d = Number(cost_totals?.total_7d || 0);
+		const current_month_cost = Number(
+			cost_totals?.total_current_month || 0,
+		);
+
+		const avg_daily_cost_30d = total_30d / 30;
+		const velocity_7d = Number(cost_velocity?.velocity_7d || 0);
+		const monthly_projection = avg_daily_cost_30d * 30;
+
+		const recent_avg = Number(cost_trend?.recent_avg || 0);
+		const prev_avg = Number(cost_trend?.prev_avg || 0);
+		const trend_ratio = prev_avg > 0 ? recent_avg / prev_avg : 1;
+
+		// Calculate current session percentile (if we have a current session)
+		const current_session_percentile = db
+			.prepare(
+				`SELECT 
+					(COUNT(CASE WHEN s2.total_cost_usd <= s1.total_cost_usd THEN 1 END) * 100.0 / COUNT(*)) as percentile
+				FROM sessions s1
+				CROSS JOIN sessions s2
+				WHERE s1.session_id = (SELECT session_id FROM sessions ORDER BY started_at DESC LIMIT 1)
+					AND s2.total_cost_usd IS NOT NULL
+					AND s1.total_cost_usd IS NOT NULL`,
+			)
+			.get() as any;
+
 		// Update global metrics
 		const updates = [
 			['avg_tool_success_rate_7d', Number(tool_avg?.avg_rate || 0)],
@@ -171,6 +236,19 @@ export function update_global_summary(): void {
 			['avg_cost_per_session_7d', Number(cost_avg?.avg_cost || 0)],
 			['total_sessions_today', Number(session_counts?.today || 0)],
 			['total_sessions_7d', Number(session_counts?.week || 0)],
+
+			// Cost analytics metrics
+			['total_cost_all_time', total_all_time],
+			['avg_session_cost_all_time', avg_session_all_time],
+			['avg_daily_cost_30d', avg_daily_cost_30d],
+			['cost_velocity_7d', velocity_7d],
+			['cost_trend_7d', trend_ratio],
+			['monthly_cost_projection', monthly_projection],
+			['current_month_cost', current_month_cost],
+			[
+				'current_session_percentile',
+				Number(current_session_percentile?.percentile || 0),
+			],
 		];
 
 		const stmt = db.prepare(
