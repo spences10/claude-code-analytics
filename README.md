@@ -4,6 +4,28 @@ This is Claude Code Analytics! It uses ClaudeCode statusline and
 Claude Code hooks to store information about your Claude Code sessions
 in a local SQLite database.
 
+## Hook-Driven Architecture
+
+**Why use hooks instead of just reading statusline data?**
+
+The statusline updates every 300ms, so we _could_ do all analytics
+calculations in real-time. But this marvellous monstrosity explores a
+different approach:
+
+- **Hooks do heavy lifting** during natural Claude Code pauses
+  (PostToolUse, UserPromptSubmit)
+- **Statusline stays responsive** with sub-millisecond lookups of
+  pre-computed data
+- **True zero-impact analytics** - expensive queries happen when
+  Claude Code is already waiting
+- **Separation of concerns** - data processing vs. display logic
+
+The result? A statusline that can show complex productivity insights,
+cache efficiency metrics, and sparkline visualizations without ever
+slowing down your workflow.
+
+_Sometimes the best solution is the most over-engineered one!_ 😂
+
 There's a CLI for some reports, Cost Analytics...
 
 ```ascii

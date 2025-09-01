@@ -13,6 +13,11 @@ import {
 	process_jsonl_transcript,
 } from '../parsers/jsonl-parser';
 import { hook_error } from '../utils/logger';
+import {
+	update_global_summary,
+	update_session_summary,
+	update_sparkline_cache,
+} from './summary-processor';
 
 // Global map to track active tool calls
 const active_tool_calls = new Map<string, number>();
@@ -91,7 +96,10 @@ export const hook_event_handlers: Record<
 
 		// User message handling
 		update_session_metrics(data);
-		// Could extract message content from data if needed
+
+		// HEAVY ANALYTICS WORK - Perfect time during user input pause
+		update_session_summary(data.session_id);
+		update_global_summary();
 	},
 
 	pre_tool_use: async (data: ClaudeCodeData) => {
@@ -145,6 +153,10 @@ export const hook_event_handlers: Record<
 				hook_error('Incremental JSONL processing failed:', error);
 			});
 		}
+
+		// HEAVY ANALYTICS WORK - Perfect time during tool completion pause
+		update_session_summary(data.session_id);
+		update_sparkline_cache();
 	},
 
 	default: async (data: ClaudeCodeData) => {

@@ -128,6 +128,54 @@ CREATE TABLE schema_version (
     description TEXT
 );
 
+-- Summary tables for pre-computed metrics (updated by hooks)
+-- These enable blazingly fast statusline queries
+
+-- Session-level summary metrics (updated by hooks)
+CREATE TABLE IF NOT EXISTS session_summary (
+    session_id TEXT PRIMARY KEY,
+    
+    -- Productivity metrics
+    efficiency_score REAL,
+    session_rank TEXT, -- 'high', 'medium', 'low'
+    cost_efficiency REAL,
+    lines_per_dollar REAL,
+    
+    -- Tool metrics
+    tool_success_rate REAL,
+    tool_count INTEGER,
+    
+    -- Cache metrics
+    cache_efficiency REAL,
+    cache_savings_tokens INTEGER,
+    total_cache_reads INTEGER,
+    total_cache_creates INTEGER,
+    
+    -- Context metrics
+    total_input_tokens INTEGER,
+    total_output_tokens INTEGER,
+    total_context_tokens INTEGER, -- input + output + cache_reads
+    
+    -- Computed at
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (session_id) REFERENCES sessions(session_id)
+);
+
+-- Global metrics summary (updated periodically by hooks)
+CREATE TABLE IF NOT EXISTS global_summary (
+    metric_key TEXT PRIMARY KEY,
+    metric_value REAL,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Sparkline data cache (updated by hooks)
+CREATE TABLE IF NOT EXISTS sparkline_cache (
+    cache_key TEXT PRIMARY KEY,
+    data_points TEXT, -- JSON array of values
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Performance indexes for real-time queries
 CREATE INDEX idx_sessions_project_active ON sessions(project_id, last_active_at DESC);
 CREATE INDEX idx_sessions_cost ON sessions(total_cost_usd DESC);
@@ -137,3 +185,8 @@ CREATE INDEX idx_tool_calls_session_time ON tool_calls(session_id, started_at);
 CREATE INDEX idx_files_project_active ON files(project_id, last_accessed_at DESC);
 CREATE INDEX idx_hook_events_session_type ON hook_events(session_id, event_type);
 CREATE INDEX idx_hook_events_timestamp ON hook_events(timestamp DESC);
+
+-- Summary table indexes for fast statusline lookups
+CREATE INDEX IF NOT EXISTS idx_session_summary_rank ON session_summary(session_rank);
+CREATE INDEX IF NOT EXISTS idx_global_summary_key ON global_summary(metric_key);
+CREATE INDEX IF NOT EXISTS idx_sparkline_cache_key ON sparkline_cache(cache_key);

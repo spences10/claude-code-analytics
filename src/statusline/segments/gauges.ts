@@ -1,5 +1,6 @@
 import { get_database } from '../../database/connection';
 import { make_gauge } from '../visuals';
+import { get_global_metric, get_session_summary } from './helpers';
 import { type SegmentRenderer } from './types';
 
 export const tool_gauge: SegmentRenderer = (
@@ -161,4 +162,95 @@ export const context_gauge: SegmentRenderer = (
 	} catch {
 		return null;
 	}
+};
+
+// Fast gauge segments using pre-computed data
+export const fast_tool_gauge: SegmentRenderer = (
+	data,
+	_insights,
+	config,
+) => {
+	const summary = get_session_summary(data.session_id);
+	let pct = summary?.tool_success_rate;
+
+	if (pct === undefined) {
+		pct = get_global_metric('avg_tool_success_rate_7d');
+		if (pct === 0) return null;
+	}
+
+	const width = (config.display?.bar_width ?? 10) as number;
+	const ascii =
+		config.display?.theme === 'ascii' ||
+		config.display?.icons === false;
+	const use_colors = (config.display as any)?.colors !== false;
+
+	return make_gauge(pct, {
+		width,
+		ascii,
+		use_colors,
+		label: 'Tools',
+	});
+};
+
+export const fast_cache_gauge: SegmentRenderer = (
+	data,
+	_insights,
+	config,
+) => {
+	const summary = get_session_summary(data.session_id);
+	let pct = summary?.cache_efficiency;
+
+	if (pct === undefined) {
+		pct = get_global_metric('avg_cache_efficiency_7d');
+		if (pct === 0) return null;
+	}
+
+	const width = (config.display?.bar_width ?? 10) as number;
+	const ascii =
+		config.display?.theme === 'ascii' ||
+		config.display?.icons === false;
+	const use_colors = (config.display as any)?.colors !== false;
+
+	return make_gauge(pct, {
+		width,
+		ascii,
+		use_colors,
+		label: 'Cache',
+	});
+};
+
+export const fast_context_gauge: SegmentRenderer = (
+	data,
+	_insights,
+	config,
+) => {
+	const summary = get_session_summary(data.session_id);
+	if (!summary?.total_context_tokens) return null;
+
+	const token_limit =
+		(config.display as any)?.context?.token_limit ?? 200000;
+	if (token_limit <= 0) return null;
+
+	const used_tokens = summary.total_context_tokens;
+	const pct = Math.max(
+		0,
+		Math.min(100, Math.round((used_tokens / token_limit) * 100)),
+	);
+
+	const width = (config.display?.bar_width ?? 12) as number;
+	const ascii =
+		config.display?.theme === 'ascii' ||
+		config.display?.icons === false;
+	const use_colors = (config.display as any)?.colors !== false;
+
+	const gauge = make_gauge(pct, {
+		width,
+		ascii,
+		use_colors,
+		label: 'Context',
+	});
+
+	const used_k = Math.round(used_tokens / 1000);
+	const limit_k = Math.round(token_limit / 1000);
+	return `${gauge} ${used_k}K/${limit_k}K`;
 };

@@ -176,7 +176,18 @@ function run_pending_migrations(db: Database.Database): void {
 }
 
 function get_available_migrations(): Migration[] {
-	// No migrations currently available
-	// Future migrations will be imported here
-	return [];
+	// Import available migrations
+	const migrations: Migration[] = [];
+
+	try {
+		// Import migration 001
+		const {
+			migration_001_add_summary_tables,
+		} = require('./migrations/001_add_summary_tables');
+		migrations.push(migration_001_add_summary_tables);
+	} catch (error) {
+		console.warn('Could not load migration 001:', error);
+	}
+
+	return migrations;
 }

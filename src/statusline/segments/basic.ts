@@ -12,6 +12,19 @@ export const model: SegmentRenderer = (data, _insights, config) => {
 	return `${icon ? icon + ' ' : ''}${data.model.display_name}`;
 };
 
+export const working_directory: SegmentRenderer = (
+	data,
+	_insights,
+	config,
+) => {
+	const cwd = data.workspace?.current_dir || process.cwd();
+	if (!cwd) return null;
+	const dir_name = cwd.split('/').pop() || '';
+	if (!dir_name || dir_name === '.') return null;
+	const icon = get_ui_icon('folder', config);
+	return `${icon ? icon + ' ' : ''}${dir_name}`;
+};
+
 export const cost: SegmentRenderer = (data, insights, config) => {
 	const formatted_cost = format_cost(data.cost?.total_cost_usd);
 	if (!formatted_cost) return null;
@@ -49,17 +62,4 @@ export const lines_changed: SegmentRenderer = (
 	if (!(added > 0 || removed > 0)) return null;
 	const icon = get_ui_icon('lines', config);
 	return `${icon ? icon + ' ' : ''}+${added}/-${removed}`;
-};
-
-export const working_directory: SegmentRenderer = (
-	data,
-	_insights,
-	config,
-) => {
-	const cwd = data.workspace?.current_dir || process.cwd();
-	if (!cwd) return null;
-	const dir_name = cwd.split('/').pop() || '';
-	if (!dir_name || dir_name === '.') return null;
-	const icon = get_ui_icon('folder', config);
-	return `${icon ? icon + ' ' : ''}${dir_name}`;
 };
