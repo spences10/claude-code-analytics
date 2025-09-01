@@ -20,6 +20,9 @@
 		},
 		"layout": [
 			[
+				"working_directory"
+			],
+			[
 				"git",
 				"model"
 			],
@@ -35,7 +38,32 @@
 				"context_gauge"
 			],
 			[
+				"activity_strip"
+			],
+			[
+				"streak_bar"
+			],
+			[
+				"cache_reads_sparkline",
 				"cost_sparkline"
+			],
+			[
+				"ambient_wave"
+			],
+			[
+				"ambient_bounce"
+			],
+			[
+				"ambient_marquee"
+			],
+			[
+				"ambient_spinner"
+			],
+			[
+				"ambient_twinkle"
+			],
+			[
+				"ambient_wave_sine"
 			]
 		]
 	}

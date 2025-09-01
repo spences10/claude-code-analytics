@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { get_productivity_insights } from '../analytics/productivity';
 import { load_config, type StatuslineConfig } from '../config';
 import { type ClaudeCodeData } from '../database';
@@ -315,6 +316,295 @@ function make_segments(): Record<string, SegmentRenderer> {
 			} catch {
 				return null;
 			}
+		},
+		activity_strip: (_data, _insights, config) => {
+			try {
+				const db = get_database();
+				const rows = db
+					.prepare(
+						`
+						SELECT strftime('%H', started_at) as h, COUNT(*) as c
+						FROM sessions
+						WHERE started_at >= datetime('now','-1 day')
+						GROUP BY strftime('%H', started_at)
+						ORDER BY h
+						`,
+					)
+					.all() as { h: string; c: number }[];
+				const buckets = new Array(24).fill(0);
+				rows.forEach((r) => {
+					const idx = parseInt(r.h, 10);
+					if (!Number.isNaN(idx)) buckets[idx] = Number(r.c || 0);
+				});
+				const values = buckets.filter((v) => v > 0);
+				const max = values.length ? Math.max(...values) : 0;
+				const use_colors = (config.display as any)?.colors !== false;
+				const ascii =
+					config.display?.theme === 'ascii' ||
+					config.display?.icons === false;
+				let out = 'Act ';
+				for (let i = 0; i < 24; i++) {
+					const v = buckets[i];
+					let ch = ascii ? '.' : '░';
+					if (v > 0 && max > 0) {
+						if (v >= max * 0.66) ch = ascii ? '#' : '██';
+						else ch = ascii ? '*' : '▓▓';
+					} else {
+						ch = ascii ? '.' : '░░';
+					}
+					if (use_colors && !ascii) {
+						if (v >= max * 0.66) ch = chalk.green(ch);
+						else if (v > 0) ch = chalk.yellow(ch);
+						else ch = chalk.gray(ch);
+					}
+					out += ch + (ascii ? '' : '');
+				}
+				return out.trimEnd();
+			} catch {
+				return null;
+			}
+		},
+		streak_bar: (_data, _insights, config) => {
+			try {
+				const days = 7;
+				const db = get_database();
+				const rows = db
+					.prepare(
+						`
+						SELECT DATE(started_at) as d, COUNT(*) as c
+						FROM sessions
+						WHERE started_at >= DATE('now','-${days} days')
+						GROUP BY DATE(started_at)
+						ORDER BY d
+						`,
+					)
+					.all() as { d: string; c: number }[];
+				const set = new Set(rows.map((r) => r.d));
+				const use_colors = (config.display as any)?.colors !== false;
+				const ascii =
+					config.display?.theme === 'ascii' ||
+					config.display?.icons === false;
+				let out = 'Streak ';
+				for (let i = days - 1; i >= 0; i--) {
+					const d = new Date();
+					d.setDate(d.getDate() - i);
+					const iso = d.toISOString().slice(0, 10);
+					let ch = ascii ? '.' : '░';
+					if (set.has(iso)) ch = ascii ? '█' : '█';
+					if (use_colors && !ascii) {
+						ch = set.has(iso) ? chalk.green(ch) : chalk.gray(ch);
+					}
+					out += ch;
+				}
+				return out;
+			} catch {
+				return null;
+			}
+		},
+		model_mix: (_data, _insights, config) => {
+			try {
+				const db = get_database();
+				const rows = db
+					.prepare(
+						`
+						SELECT COALESCE(model_display_name,'Unknown') as name, COUNT(*) as c
+						FROM sessions
+						WHERE started_at >= datetime('now','-30 days')
+						GROUP BY model_display_name
+						ORDER BY c DESC
+						LIMIT 3
+						`,
+					)
+					.all() as { name: string; c: number }[];
+				if (!rows.length) return null;
+				const total = rows.reduce((s, r) => s + Number(r.c || 0), 0);
+				const ascii =
+					config.display?.theme === 'ascii' ||
+					config.display?.icons === false;
+				const use_colors = (config.display as any)?.colors !== false;
+				const parts: string[] = [];
+				rows.forEach((r, idx) => {
+					const ratio = total > 0 ? r.c / total : 0;
+					const cells = Math.max(1, Math.round(ratio * 6));
+					const bar_raw = (ascii ? '=' : '█').repeat(cells);
+					const color =
+						idx === 0
+							? chalk.cyan
+							: idx === 1
+								? chalk.green
+								: chalk.yellow;
+					const bar = use_colors ? color(bar_raw) : bar_raw;
+					const label = r.name.split(' ')[0].slice(0, 6);
+					parts.push(`[${label} ${bar}]`);
+				});
+				return parts.join(' ');
+			} catch {
+				return null;
+			}
+		},
+		cache_reads_sparkline: (_data, _insights, config) => {
+			try {
+				const db = get_database();
+				const points = Math.max(
+					5,
+					Math.min(
+						60,
+						(config.display as any)?.sparkline?.points ?? 20,
+					),
+				);
+				const rows = db
+					.prepare(
+						`
+						SELECT
+							s.session_id,
+							SUM(COALESCE(m.cache_read_input_tokens, 0)) as r
+						FROM
+							sessions s
+							JOIN messages m ON m.session_id = s.session_id
+						WHERE
+							m.role = 'assistant'
+						GROUP BY
+							s.session_id
+						ORDER BY
+							s.started_at DESC
+						LIMIT
+							?
+						`,
+					)
+					.all(points) as { r: number }[];
+				const values = rows.map((r) => Number(r.r || 0)).reverse();
+				if (values.length === 0) return null;
+				const width = Math.max(
+					5,
+					Math.min(
+						60,
+						(config.display as any)?.sparkline?.width ?? 20,
+					),
+				);
+				const height = Math.max(
+					1,
+					Math.min(
+						6,
+						(config.display as any)?.sparkline?.height ?? 2,
+					),
+				);
+				const spark = make_sparkline(values, { width, height });
+				return `Cache ${spark}`;
+			} catch {
+				return null;
+			}
+		},
+		ambient_wave: () => {
+			const width = 12;
+			const t = Math.floor(Date.now() / 300);
+			let out = '';
+			for (let i = 0; i < width; i++) {
+				out += i === t % width ? '●' : '·';
+			}
+			return out;
+		},
+		ambient_bounce: (_d, _i, config) => {
+			const width = 12;
+			const ascii =
+				config.display?.theme === 'ascii' ||
+				config.display?.icons === false;
+			const t = Math.floor(Date.now() / 300);
+			const period = Math.max(2, 2 * (width - 1));
+			let pos = t % period;
+			if (pos >= width) pos = period - pos;
+			let out = '';
+			for (let i = 0; i < width; i++) {
+				out += i === pos ? (ascii ? 'o' : '●') : ascii ? '.' : '·';
+			}
+			return out;
+		},
+		ambient_marquee: (_d, _i, config) => {
+			const width = 12;
+			const ascii =
+				config.display?.theme === 'ascii' ||
+				config.display?.icons === false;
+			const t = Math.floor(Date.now() / 200);
+			const pattern = ascii
+				? ['.', '=', '-', '=']
+				: ['░', '▒', '▓', '▒'];
+			const plen = pattern.length;
+			let out = '';
+			for (let i = 0; i < width; i++) {
+				const idx = (i + t) % plen;
+				out += pattern[idx];
+			}
+			return out;
+		},
+		ambient_spinner: () => {
+			const frames = [
+				'⠋',
+				'⠙',
+				'⠹',
+				'⠸',
+				'⠼',
+				'⠴',
+				'⠦',
+				'⠧',
+				'⠇',
+				'⠏',
+			];
+			const t = Math.floor(Date.now() / 120);
+			return frames[t % frames.length];
+		},
+		ambient_twinkle: (_d, _i, config) => {
+			const width = 12;
+			const ascii =
+				config.display?.theme === 'ascii' ||
+				config.display?.icons === false;
+			const t = Math.floor(Date.now() / 400);
+			const p1 = (t * 3 + 1) % width;
+			const p2 = (t * 5 + 2) % width;
+			const p3 = (t * 7 + 3) % width;
+			const star = ascii ? '*' : '✦';
+			const dot = ascii ? '.' : '·';
+			let out = '';
+			for (let i = 0; i < width; i++) {
+				out += i === p1 || i === p2 || i === p3 ? star : dot;
+			}
+			return out;
+		},
+		ambient_wave_sine: (_d, _i, config) => {
+			const width = 12;
+			const ascii =
+				config.display?.theme === 'ascii' ||
+				config.display?.icons === false;
+			const blocks = ascii
+				? ['_', '-', '=']
+				: ['▁', '▂', '▃', '▄', '▅', '▆', '▇'];
+			const t = Math.floor(Date.now() / 200);
+			let out = '';
+			for (let x = 0; x < width; x++) {
+				const phase = (t + x) / 3;
+				const s = Math.sin(phase);
+				const idx = Math.max(
+					0,
+					Math.min(
+						blocks.length - 1,
+						Math.round(((s + 1) / 2) * (blocks.length - 1)),
+					),
+				);
+				out += blocks[idx];
+			}
+			return out;
+		},
+		ambient_diagonal: (_d, _i, config) => {
+			const width = 12;
+			const ascii =
+				config.display?.theme === 'ascii' ||
+				config.display?.icons === false;
+			const pattern = ascii ? ['/', '\\'] : ['╱', '╲'];
+			const t = Math.floor(Date.now() / 200);
+			let out = '';
+			for (let i = 0; i < width; i++) {
+				const idx = (i + t) % 2;
+				out += pattern[idx];
+			}
+			return out;
 		},
 	};
 }
