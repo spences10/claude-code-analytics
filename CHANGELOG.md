@@ -1,5 +1,11 @@
 # claude-code-analytics
 
+## 0.0.12
+
+### Patch Changes
+
+- 7caba3a: add timeout and WAL cleanup to the get_database()
+
 ## 0.0.11
 
 ### Patch Changes
